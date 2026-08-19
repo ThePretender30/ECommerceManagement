@@ -1,0 +1,85 @@
+.toast-stack {
+  position: fixed;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  right: var(--space-4);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+/* On wider screens the stack sits in the bottom-right corner instead of
+   spanning the full width. */
+@media (min-width: 640px) {
+  .toast-stack {
+    left: auto;
+    right: var(--space-6);
+    bottom: var(--space-6);
+    max-width: 380px;
+    width: 100%;
+  }
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid var(--color-text-subtle);
+  animation: toast-in 200ms ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-inverse);
+  margin-top: 2px;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.toast-close {
+  flex-shrink: 0;
+  font-size: var(--text-xl);
+  line-height: 1;
+  color: var(--color-text-subtle);
+  padding: 0 var(--space-1);
+  transition: color var(--transition-fast);
+}
+
+.toast-close:hover {
+  color: var(--color-text);
+}
+
+.toast-success { border-left-color: var(--color-success); }
+.toast-success .toast-icon { background-color: var(--color-success); }
+
+.toast-error { border-left-color: var(--color-danger); }
+.toast-error .toast-icon { background-color: var(--color-danger); }
+
+.toast-warning { border-left-color: var(--color-warning); }
+.toast-warning .toast-icon { background-color: var(--color-warning); }
+
+.toast-info { border-left-color: var(--color-info); }
+.toast-info .toast-icon { background-color: var(--color-info); }

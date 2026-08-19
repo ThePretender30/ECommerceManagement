@@ -1,0 +1,301 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-inner {
+  display: grid;
+  grid-template-areas:
+    'burger brand actions'
+    'search search  search';
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+}
+
+/* From tablet up, everything fits on one row and the links become visible. */
+@media (min-width: 1024px) {
+  .navbar-inner {
+    grid-template-areas: 'brand search links actions';
+    grid-template-columns: auto minmax(200px, 1fr) auto auto;
+    min-height: var(--navbar-height);
+    padding-block: 0;
+    gap: var(--space-5);
+  }
+}
+
+/* ---- Burger --------------------------------------------------------------- */
+.navbar-burger {
+  grid-area: burger;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.navbar-burger span {
+  display: block;
+  height: 2px;
+  background-color: var(--color-text);
+  border-radius: 2px;
+}
+
+.navbar-burger:hover {
+  background-color: var(--color-surface-alt);
+}
+
+@media (min-width: 1024px) {
+  .navbar-burger { display: none; }
+}
+
+/* ---- Brand ---------------------------------------------------------------- */
+.navbar-brand {
+  grid-area: brand;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.navbar-brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: var(--color-text-inverse);
+  display: grid;
+  place-items: center;
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+}
+
+/* ---- Search --------------------------------------------------------------- */
+.navbar-search {
+  grid-area: search;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.navbar-search:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.navbar-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: none;
+  font-size: var(--text-sm);
+}
+
+.navbar-search-input:focus {
+  outline: none;
+}
+
+.navbar-search-btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+}
+
+/* ---- Links ---------------------------------------------------------------- */
+.navbar-links {
+  grid-area: links;
+  display: none;
+  gap: var(--space-1);
+}
+
+.navbar-links.is-open {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1 / -1;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 1024px) {
+  .navbar-links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.navbar-link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.navbar-link:hover {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.navbar-link.active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.navbar-link-admin {
+  color: var(--color-accent-dark);
+}
+
+/* ---- Actions -------------------------------------------------------------- */
+.navbar-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* The Sign up button is redundant next to Sign in on the smallest screens. */
+@media (max-width: 400px) {
+  .navbar-register { display: none; }
+}
+
+.navbar-account {
+  position: relative;
+}
+
+.navbar-account-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast);
+}
+
+.navbar-account-btn:hover {
+  background-color: var(--color-surface-alt);
+}
+
+.navbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  display: grid;
+  place-items: center;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  flex-shrink: 0;
+}
+
+.navbar-account-name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .navbar-account-name { display: inline; }
+}
+
+.navbar-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 220px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  z-index: var(--z-dropdown);
+}
+
+.navbar-dropdown-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-alt);
+  font-size: var(--text-sm);
+}
+
+.navbar-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  transition: background-color var(--transition-fast);
+}
+
+.navbar-dropdown-item:hover {
+  background-color: var(--color-surface-alt);
+}
+
+.navbar-dropdown-item.is-danger {
+  color: var(--color-danger);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Cart ----------------------------------------------------------------- */
+.navbar-cart {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  font-size: var(--text-lg);
+  transition: background-color var(--transition-fast);
+}
+
+.navbar-cart:hover {
+  background-color: var(--color-surface-alt);
+}
+
+.navbar-cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-danger);
+  color: var(--color-text-inverse);
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}

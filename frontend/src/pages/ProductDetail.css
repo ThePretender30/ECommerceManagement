@@ -1,0 +1,300 @@
+/* ---- Main detail ---------------------------------------------------------- */
+.detail {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .detail {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-10);
+  }
+}
+
+.detail-media {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+}
+
+@media (min-width: 768px) {
+  .detail-media {
+    position: sticky;
+    top: calc(var(--navbar-height) + var(--space-4));
+  }
+}
+
+.detail-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.detail-category {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.detail-name {
+  font-size: var(--text-2xl);
+  line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  .detail-name { font-size: var(--text-3xl); }
+}
+
+.detail-brand {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.detail-price {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+}
+
+.detail-section-heading {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.detail-description p {
+  font-size: var(--text-sm);
+  line-height: 1.75;
+  color: var(--color-text-muted);
+}
+
+.detail-purchase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+}
+
+.detail-qty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.detail-actions {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .detail-actions { grid-template-columns: 1fr 1fr; }
+}
+
+.detail-meta {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, 1fr);
+  padding-top: var(--space-5);
+  margin-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.detail-meta dt {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.detail-meta dd {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+/* ---- Reviews -------------------------------------------------------------- */
+.reviews {
+  margin-top: var(--space-16);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border);
+}
+
+.reviews-title {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-6);
+}
+
+.reviews-layout {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .reviews-layout {
+    grid-template-columns: 300px 1fr;
+  }
+}
+
+.reviews-summary {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+
+.reviews-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding-bottom: var(--space-5);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reviews-average {
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+}
+
+.reviews-total {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.reviews-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.reviews-bar-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 28px;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.reviews-bar-track {
+  height: 6px;
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.reviews-bar-fill {
+  display: block;
+  height: 100%;
+  background-color: var(--color-accent);
+  border-radius: var(--radius-full);
+  transition: width var(--transition);
+}
+
+.reviews-bar-count {
+  text-align: right;
+}
+
+.reviews-own {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---- Review form ---------------------------------------------------------- */
+.review-form {
+  margin-bottom: var(--space-4);
+}
+
+.review-stars {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.review-star {
+  font-size: var(--text-2xl);
+  line-height: 1;
+  color: var(--color-border-strong);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.review-star:hover {
+  transform: scale(1.15);
+}
+
+.review-star.is-on {
+  color: var(--color-accent);
+}
+
+/* ---- Review list ---------------------------------------------------------- */
+.review-item {
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.review-item:last-of-type {
+  border-bottom: none;
+}
+
+.review-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.review-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  display: grid;
+  place-items: center;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+
+.review-author {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.review-text {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  padding-left: calc(36px + var(--space-3));
+}
+
+@media (max-width: 480px) {
+  .review-text { padding-left: 0; }
+}

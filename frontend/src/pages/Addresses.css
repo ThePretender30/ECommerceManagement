@@ -1,0 +1,71 @@
+.address-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .address-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .address-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.address-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+}
+
+.address-card:hover {
+  border-color: var(--color-border-strong);
+}
+
+.address-card.is-default {
+  border-color: var(--color-primary);
+  background-color: #f8faff;
+}
+
+.address-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.address-card-name {
+  font-size: var(--text-base);
+}
+
+.address-card-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.address-card-phone {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.address-card-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.address-delete {
+  color: var(--color-danger);
+  margin-left: auto;
+}

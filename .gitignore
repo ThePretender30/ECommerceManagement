@@ -1,0 +1,42 @@
+# ---- Secrets (never commit) ----
+.env
+*.env
+!.env.example
+
+# ---- Java / Maven ----
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+*.war
+*.log
+hs_err_pid*
+
+# ---- Node / Vite ----
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- IDE ----
+.idea/
+*.iml
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+nbproject/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- AI agent / local documentation ----
+AGENTS.md
+README.md

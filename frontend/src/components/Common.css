@@ -1,0 +1,210 @@
+/* ---- Loader --------------------------------------------------------------- */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10);
+}
+
+.loader-full {
+  min-height: 50vh;
+}
+
+.loader-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Empty / error states -------------------------------------------------- */
+.empty-state,
+.error-state {
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+}
+
+.empty-state-icon,
+.error-state-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+  line-height: 1;
+}
+
+.empty-state-title {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+}
+
+.empty-state-message,
+.error-state-message {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  max-width: 42ch;
+  margin-inline: auto;
+}
+
+.empty-state-action {
+  margin-top: var(--space-6);
+}
+
+/* ---- Star rating ----------------------------------------------------------- */
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
+
+/* The filled row is absolutely positioned over the empty one and clipped by
+   width, which is what makes fractional ratings render honestly. */
+.stars-track {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.stars-empty {
+  color: var(--color-border-strong);
+  letter-spacing: 1px;
+}
+
+.stars-filled {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--color-accent);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.stars-sm { font-size: var(--text-xs); }
+.stars-md { font-size: var(--text-sm); }
+.stars-lg { font-size: var(--text-lg); }
+
+.stars-value {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  font-size: 0.9em;
+}
+
+.stars-count {
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+}
+
+/* ---- Quantity stepper ------------------------------------------------------ */
+.qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background-color: var(--color-surface);
+}
+
+.qty-stepper button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.qty-stepper button:hover:not(:disabled) {
+  background-color: var(--color-surface-alt);
+  color: var(--color-primary);
+}
+
+.qty-stepper button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qty-value {
+  min-width: 40px;
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  border-inline: 1px solid var(--color-border);
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+}
+
+/* ---- Pagination ------------------------------------------------------------ */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+}
+
+.pagination-btn {
+  min-width: 38px;
+  height: 38px;
+  padding-inline: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled):not(.is-active) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pagination-btn.is-active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: var(--weight-semibold);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-gap {
+  padding-inline: var(--space-1);
+  color: var(--color-text-subtle);
+}
+
+/* ---- Breadcrumbs ----------------------------------------------------------- */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.breadcrumbs a {
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.breadcrumbs a:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumbs-sep {
+  margin-inline: var(--space-2);
+  color: var(--color-text-subtle);
+}
