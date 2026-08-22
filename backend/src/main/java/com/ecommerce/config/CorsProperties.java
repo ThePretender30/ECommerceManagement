@@ -11,5 +11,9 @@ import java.util.List;
 @Setter
 public class CorsProperties {
 
-    private List<String> allowedOrigins = List.of("http://localhost:5173");
+    private List<String> allowedOrigins = List.of(
+            "http://localhost:5173",
+            "http://localhost:4173",
+            "https://thepretender30.github.io"
+    );
 }
