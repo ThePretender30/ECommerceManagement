@@ -4,7 +4,7 @@ const TOKEN_KEY = 'ecommerce.token'
 const USER_KEY = 'ecommerce.user'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
   timeout: 20000,
 })
@@ -50,7 +50,7 @@ api.interceptors.response.use(
       const networkError = new Error(
         error.code === 'ECONNABORTED'
           ? 'The server took too long to respond. Please try again.'
-          : 'Cannot reach the server. Is the backend running on port 8080?'
+          : 'Unable to connect to the server. Please try again.'
       )
       networkError.isNetworkError = true
       return Promise.reject(networkError)
