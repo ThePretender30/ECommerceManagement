@@ -9,13 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Adapts our {@link User} entity to Spring Security's {@link UserDetails}.
- *
- * <p>Carrying {@code id} here is what lets services scope every query to the caller
- * ("find MY cart", "find MY order") without a second lookup, which is the mechanism that
- * prevents one customer from reading another's data.
- */
 @Getter
 public class UserPrincipal implements UserDetails {
 
@@ -43,7 +36,6 @@ public class UserPrincipal implements UserDetails {
         return authorities.stream().map(GrantedAuthority::getAuthority).toList();
     }
 
-    /** Spring Security uses email as the username throughout this application. */
     @Override
     public String getUsername() {
         return email;

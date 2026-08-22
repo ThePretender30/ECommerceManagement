@@ -7,14 +7,6 @@ import { categoryService } from '../services/catalogService'
 import { handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './Home.css'
 
-/**
- * The storefront landing page.
- *
- * Everything below the hero comes from the API - the six category cards, and
- * the featured/popular/new-arrivals rows are all live database queries, not
- * hard-coded lists. All four requests are issued together with Promise.all so
- * the page renders in one pass instead of four staggered ones.
- */
 export default function Home() {
   const [data, setData] = useState({
     categories: [],
@@ -49,7 +41,6 @@ export default function Home() {
 
   return (
     <div className="home">
-      {/* ---------------- Hero ---------------- */}
       <section className="hero">
         <div className="container hero-inner">
           <div className="hero-content">
@@ -71,7 +62,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- Value props ---------------- */}
       <section className="container">
         <div className="value-props">
           <div className="value-prop">
@@ -105,7 +95,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- Categories ---------------- */}
       <section className="container home-section">
         <div className="home-section-header">
           <div>
@@ -141,7 +130,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- Product rows ---------------- */}
       <ProductRow
         title="Featured products"
         subtitle="Our highest rated items right now."
@@ -149,7 +137,6 @@ export default function Home() {
         link="/products?sort=rating"
       />
 
-      {/* Promo band between the rows, for visual rhythm. */}
       <section className="container">
         <div className="promo-band">
           <div>
@@ -179,7 +166,6 @@ export default function Home() {
   )
 }
 
-/** One titled row of products. Renders nothing when the row is empty. */
 function ProductRow({ title, subtitle, products, link }) {
   if (!products?.length) return null
 

@@ -14,13 +14,6 @@ const STATUS_LABELS = {
   CANCELLED: 'Cancelled',
 }
 
-/**
- * Admin dashboard.
- *
- * Every figure here is a live aggregate from the database (see
- * AdminStatsService) - revenue sums, per-status counts, best sellers by units
- * shipped, and the low-stock watchlist. None of it is placeholder data.
- */
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -57,7 +50,6 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* ---------------- Headline figures ---------------- */}
       <div className="stat-grid">
         <div className="stat-card is-success">
           <span className="stat-card-label">Total revenue</span>
@@ -112,7 +104,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ---------------- Breakdown panels ---------------- */}
       <div className="admin-grid cols-2 mt-6">
         <section className="card">
           <div className="card-header">Orders by status</div>
@@ -168,7 +159,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-grid split mt-6">
-        {/* ---------------- Recent orders ---------------- */}
         <section className="card">
           <div className="card-header">
             Recent orders
@@ -218,10 +208,8 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        {/* ---------------- Low stock ---------------- */}
         <section className="card">
-          <div className="card-header">
-            Low stock
+          <div className="card-header">Low stock
             <Link to="/admin/products" className="text-sm">Manage</Link>
           </div>
           <div className="card-body">

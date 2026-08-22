@@ -18,7 +18,6 @@
   padding-block: var(--space-3);
 }
 
-/* From tablet up, everything fits on one row and the links become visible. */
 @media (min-width: 1024px) {
   .navbar-inner {
     grid-template-areas: 'brand search links actions';
@@ -29,7 +28,6 @@
   }
 }
 
-/* ---- Burger --------------------------------------------------------------- */
 .navbar-burger {
   grid-area: burger;
   display: flex;
@@ -57,7 +55,6 @@
   .navbar-burger { display: none; }
 }
 
-/* ---- Brand ---------------------------------------------------------------- */
 .navbar-brand {
   grid-area: brand;
   display: flex;
@@ -80,7 +77,6 @@
   flex-shrink: 0;
 }
 
-/* ---- Search --------------------------------------------------------------- */
 .navbar-search {
   grid-area: search;
   display: flex;
@@ -115,7 +111,6 @@
   font-size: var(--text-sm);
 }
 
-/* ---- Links ---------------------------------------------------------------- */
 .navbar-links {
   grid-area: links;
   display: none;
@@ -166,7 +161,6 @@
   color: var(--color-accent-dark);
 }
 
-/* ---- Actions -------------------------------------------------------------- */
 .navbar-actions {
   grid-area: actions;
   display: flex;
@@ -180,7 +174,6 @@
   gap: var(--space-1);
 }
 
-/* The Sign up button is redundant next to Sign in on the smallest screens. */
 @media (max-width: 400px) {
   .navbar-register { display: none; }
 }
@@ -267,7 +260,6 @@
   border-top: 1px solid var(--color-border);
 }
 
-/* ---- Cart ----------------------------------------------------------------- */
 .navbar-cart {
   position: relative;
   width: 40px;

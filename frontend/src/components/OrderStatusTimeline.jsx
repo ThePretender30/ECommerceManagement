@@ -1,14 +1,6 @@
 import { formatDateTime } from '../utils/format'
 import './OrderStatusTimeline.css'
 
-/**
- * The order tracking progress bar.
- *
- * The backend decides which steps exist and whether each is completed, current
- * or pending — including returning a short two-step timeline for a cancelled
- * order rather than a stalled progress bar. This component only renders what it
- * is given, so the delivery sequence is defined in exactly one place.
- */
 export default function OrderStatusTimeline({ steps, cancelled }) {
   if (!steps?.length) return null
 

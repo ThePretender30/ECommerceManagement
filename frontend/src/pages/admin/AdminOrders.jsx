@@ -15,7 +15,6 @@ const STATUS_FILTERS = [
   { value: 'CANCELLED', label: 'Cancelled' },
 ]
 
-/** All orders across every customer, filterable by status. */
 export default function AdminOrders() {
   const [result, setResult] = useState(null)
   const [status, setStatus] = useState('')

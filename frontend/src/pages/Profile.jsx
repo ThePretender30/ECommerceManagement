@@ -5,13 +5,6 @@ import { useAuth, useToast } from '../hooks'
 import { formatDate } from '../utils/format'
 import './Profile.css'
 
-/**
- * Account settings: name, WhatsApp number and password.
- *
- * Email is shown read-only because it is the login identity and the subject of
- * every issued token — changing it would need a re-verification flow, which is
- * out of scope here. The field explains that rather than silently disabling.
- */
 export default function Profile() {
   const { user, updateUser } = useAuth()
   const toast = useToast()
@@ -107,7 +100,6 @@ export default function Profile() {
         </aside>
 
         <div className="stack">
-          {/* ---------------- Profile details ---------------- */}
           <section className="card">
             <div className="card-header">Account details</div>
             <div className="card-body">
@@ -166,7 +158,6 @@ export default function Profile() {
             </div>
           </section>
 
-          {/* ---------------- Password ---------------- */}
           <section className="card">
             <div className="card-header">Change password</div>
             <div className="card-body">

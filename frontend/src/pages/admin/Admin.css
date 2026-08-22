@@ -1,6 +1,4 @@
-/* ============================================================================
-   Admin workspace: a fixed sidebar on desktop, a slide-in drawer on mobile.
-   ========================================================================== */
+
 
 .admin {
   display: flex;
@@ -8,7 +6,6 @@
   background-color: var(--color-bg);
 }
 
-/* ---- Sidebar -------------------------------------------------------------- */
 .admin-sidebar {
   position: fixed;
   inset-block: 0;
@@ -122,7 +119,6 @@
   gap: 2px;
 }
 
-/* ---- Main ----------------------------------------------------------------- */
 .admin-main {
   flex: 1;
   min-width: 0;
@@ -194,7 +190,6 @@
   flex: 1;
 }
 
-/* ---- Shared admin pieces --------------------------------------------------- */
 .admin-header {
   display: flex;
   align-items: flex-start;
@@ -214,7 +209,6 @@
   color: var(--color-text-muted);
 }
 
-/* ---- Stat cards ------------------------------------------------------------ */
 .stat-grid {
   display: grid;
   gap: var(--space-4);
@@ -260,7 +254,6 @@
 .stat-card.is-warning { border-left: 3px solid var(--color-warning); }
 .stat-card.is-danger  { border-left: 3px solid var(--color-danger); }
 
-/* ---- Panels ---------------------------------------------------------------- */
 .admin-grid {
   display: grid;
   gap: var(--space-5);
@@ -273,7 +266,6 @@
   .admin-grid.split  { grid-template-columns: 1.5fr 1fr; }
 }
 
-/* ---- Toolbar --------------------------------------------------------------- */
 .admin-toolbar {
   display: flex;
   gap: var(--space-3);
@@ -295,7 +287,6 @@
   min-width: 160px;
 }
 
-/* ---- Table extras ---------------------------------------------------------- */
 .table-product {
   display: flex;
   align-items: center;
@@ -335,7 +326,6 @@
 .stock-pill.is-low  { background-color: var(--color-warning-light); color: #9a3412; }
 .stock-pill.is-none { background-color: var(--color-danger-light);  color: #991b1b; }
 
-/* ---- Simple bar list (status breakdown, top products) ---------------------- */
 .bar-list {
   display: flex;
   flex-direction: column;

@@ -21,11 +21,6 @@ public interface ProductReviewRepository extends JpaRepository<ProductReview, Lo
 
     long countByProductId(Long productId);
 
-    /**
-     * Recomputes a product's rating summary from scratch after any review change.
-     * Returning both values in one query keeps {@code Product.averageRating} and
-     * {@code reviewCount} exactly consistent with the underlying reviews.
-     */
     @Query("SELECT AVG(r.rating) FROM ProductReview r WHERE r.product.id = :productId")
     Double calculateAverageRating(@Param("productId") Long productId);
 }

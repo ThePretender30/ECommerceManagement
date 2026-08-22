@@ -3,14 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth, useToast } from '../hooks'
 import './Auth.css'
 
-/**
- * Sign-in page, used by customers and admins alike - there is one account
- * system, and what you can reach afterwards depends on your role.
- *
- * On success the user is sent to `?redirect=`, so being bounced here from a
- * protected page returns them to where they were trying to go. Admins with no
- * pending redirect land on the dashboard instead of the storefront.
- */
 export default function Login() {
   const { login } = useAuth()
   const toast = useToast()
@@ -25,7 +17,6 @@ export default function Login() {
   const handleChange = (event) => {
     const { name, value } = event.target
     setForm((current) => ({ ...current, [name]: value }))
-    // Clear the inline error as soon as the user starts fixing the field.
     setFieldErrors((current) => ({ ...current, [name]: undefined }))
   }
 

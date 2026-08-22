@@ -4,9 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-/** Payload for creating or updating a saved delivery address. */
 public record AddressRequest(
-
         @NotBlank(message = "Recipient name is required")
         @Size(max = 120, message = "Recipient name must not exceed 120 characters")
         String fullName,
@@ -38,6 +36,5 @@ public record AddressRequest(
         @Size(max = 100, message = "Country must not exceed 100 characters")
         String country,
 
-        /** When true, any previously default address for this user is demoted. */
         Boolean isDefault
 ) {}

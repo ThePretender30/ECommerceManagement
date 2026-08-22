@@ -4,14 +4,6 @@ import { AuthContext } from './AuthContext'
 
 export const CartContext = createContext(null)
 
-/**
- * Mirrors the server-side cart.
- *
- * The cart lives in the database, not in this state - every mutation calls the
- * API and replaces local state with whatever the server returns. That means
- * quantities, totals and stock warnings always come from the authoritative
- * source, and the cart survives switching devices.
- */
 export function CartProvider({ children }) {
   const { isAuthenticated } = useContext(AuthContext)
   const [cart, setCart] = useState(null)
@@ -28,7 +20,6 @@ export function CartProvider({ children }) {
       setCart(data)
       return data
     } catch {
-      // A cart failure should never break the page the user is on.
       setCart(null)
       return null
     } finally {
@@ -36,7 +27,6 @@ export function CartProvider({ children }) {
     }
   }, [isAuthenticated])
 
-  // Load on sign-in, drop on sign-out.
   useEffect(() => {
     refresh()
   }, [refresh])
@@ -65,7 +55,6 @@ export function CartProvider({ children }) {
     return updated
   }, [])
 
-  /** Called after checkout, when the backend has already emptied the cart. */
   const reset = useCallback(() => setCart(null), [])
 
   const value = useMemo(

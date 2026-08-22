@@ -6,13 +6,6 @@ import { useCart, useToast } from '../hooks'
 import { formatCurrency, handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './Cart.css'
 
-/**
- * The shopping cart.
- *
- * Every total shown here comes from the server, and each line carries its own
- * stock status - so an item that sold out after being added is flagged here,
- * before the customer reaches checkout and hits a failure.
- */
 export default function Cart() {
   const { cart, items, loading, subtotal, total, checkoutAllowed, updateItem, removeItem, clear } =
     useCart()
@@ -155,8 +148,6 @@ export default function Cart() {
           </div>
         </div>
 
-        {/* Summary sticks to the viewport on desktop so the checkout button is
-            always reachable, however long the item list gets. */}
         <aside className="cart-summary">
           <h2 className="cart-summary-title">Order summary</h2>
 

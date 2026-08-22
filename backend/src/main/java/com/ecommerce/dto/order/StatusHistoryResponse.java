@@ -4,7 +4,6 @@ import com.ecommerce.entity.OrderStatusHistory;
 
 import java.time.Instant;
 
-/** One step in the order tracking timeline. */
 public record StatusHistoryResponse(
         Long id,
         String status,

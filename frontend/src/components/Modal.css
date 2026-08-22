@@ -10,8 +10,6 @@
   animation: fade-in 150ms ease;
 }
 
-/* On phones the dialog slides up from the bottom like a sheet; from tablet up
-   it is centred. */
 @media (min-width: 640px) {
   .modal-backdrop {
     align-items: center;
@@ -73,7 +71,6 @@
   color: var(--color-text);
 }
 
-/* Only the body scrolls, so the header and footer stay reachable. */
 .modal-body {
   padding: var(--space-5);
   overflow-y: auto;

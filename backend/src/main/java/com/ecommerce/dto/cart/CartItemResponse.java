@@ -4,13 +4,6 @@ import com.ecommerce.entity.CartItem;
 
 import java.math.BigDecimal;
 
-/**
- * One line in the cart view.
- *
- * <p>{@code availableStock} and {@code stockSufficient} travel with each line so the cart
- * page can flag an item that went out of stock after it was added - before the customer
- * reaches checkout and gets a failure.
- */
 public record CartItemResponse(
         Long id,
         Long productId,

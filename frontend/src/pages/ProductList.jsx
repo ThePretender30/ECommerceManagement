@@ -17,13 +17,6 @@ const SORT_OPTIONS = [
 
 const PAGE_SIZE = 12
 
-/**
- * The one listing page behind browsing, category pages and search results.
- *
- * All filter state lives in the URL (see `useQueryParams`), which is what makes
- * a filtered result shareable and the browser back button behave sensibly. The
- * search box is debounced so typing does not fire a request per keystroke.
- */
 export default function ProductList() {
   const { get, setParams, clearAll } = useQueryParams()
 
@@ -34,8 +27,6 @@ export default function ProductList() {
   const [error, setError] = useState(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  // Local mirror of the search box so typing feels instant while the request
-  // waits for a pause.
   const [searchInput, setSearchInput] = useState(get('q'))
   const debouncedSearch = useDebounce(searchInput, 450)
 
@@ -49,25 +40,20 @@ export default function ProductList() {
   const page = Number(get('page', '0'))
   const query = get('q')
 
-  // Push the debounced search term into the URL.
   useEffect(() => {
     if (debouncedSearch !== query) {
       setParams({ q: debouncedSearch })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch])
+  }, [debouncedSearch, query, setParams])
 
-  // Keep the input in step when the URL changes from elsewhere (e.g. navbar search).
   useEffect(() => {
     setSearchInput(query)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
   useEffect(() => {
     categoryService.list().then(setCategories).catch(() => setCategories([]))
   }, [])
 
-  // Brand options depend on the selected category.
   useEffect(() => {
     const category = categories.find((c) => c.slug === categorySlug)
     productService
@@ -130,7 +116,6 @@ export default function ProductList() {
       </div>
 
       <div className="listing">
-        {/* ---------------- Filters ---------------- */}
         <button
           type="button"
           className="btn btn-outline listing-filter-toggle"
@@ -178,7 +163,6 @@ export default function ProductList() {
                   key={category.id}
                   type="button"
                   className={categorySlug === category.slug ? 'filter-option is-active' : 'filter-option'}
-                  // Changing category clears brand, since brands are category-specific.
                   onClick={() => setParams({ category: category.slug, brand: null })}
                 >
                   {category.name}
@@ -257,7 +241,6 @@ export default function ProductList() {
           </div>
         </aside>
 
-        {/* ---------------- Results ---------------- */}
         <div className="listing-results">
           <div className="listing-toolbar">
             <label className="listing-sort">

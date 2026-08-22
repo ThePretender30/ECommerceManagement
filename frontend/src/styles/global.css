@@ -1,12 +1,5 @@
-/* ============================================================================
-   Global styles: reset, base elements, and the shared utility classes that
-   more than one page needs (container, buttons, forms, cards, badges).
-   Component-specific styling lives beside each component instead.
-   ========================================================================== */
-
 @import './tokens.css';
 
-/* ---- Reset ---------------------------------------------------------------- */
 *,
 *::before,
 *::after {
@@ -64,13 +57,11 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: var(--weight-semibold);
 }
 
-/* Visible keyboard focus everywhere - never removed, only restyled. */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Respect users who ask for reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -81,7 +72,6 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* ---- Layout --------------------------------------------------------------- */
 .container {
   width: 100%;
   max-width: var(--container-max);
@@ -120,7 +110,6 @@ h1, h2, h3, h4, h5, h6 {
   font-size: var(--text-sm);
 }
 
-/* Screen-reader-only text (used for icon-button labels). */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -133,7 +122,6 @@ h1, h2, h3, h4, h5, h6 {
   border: 0;
 }
 
-/* ---- Buttons -------------------------------------------------------------- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -217,7 +205,6 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
-/* ---- Forms ---------------------------------------------------------------- */
 .form-group {
   margin-bottom: var(--space-4);
 }
@@ -255,7 +242,6 @@ h1, h2, h3, h4, h5, h6 {
   cursor: not-allowed;
 }
 
-/* Applied when the backend returns a fieldErrors entry for this input. */
 .form-control.has-error {
   border-color: var(--color-danger);
 }
@@ -296,7 +282,6 @@ textarea.form-control {
   min-height: 90px;
 }
 
-/* ---- Cards ---------------------------------------------------------------- */
 .card {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -319,7 +304,6 @@ textarea.form-control {
   flex-wrap: wrap;
 }
 
-/* ---- Alerts --------------------------------------------------------------- */
 .alert {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
@@ -352,7 +336,6 @@ textarea.form-control {
   border-color: #fed7aa;
 }
 
-/* ---- Badges --------------------------------------------------------------- */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -371,9 +354,6 @@ textarea.form-control {
 .badge-warning { background-color: var(--color-warning-light); color: #9a3412; }
 .badge-info    { background-color: var(--color-info-light);    color: #155e75; }
 
-/* ---- Tables (admin) ------------------------------------------------------- */
-/* Wrapped in .table-wrap so wide tables scroll inside their own box rather
-   than forcing the whole page to scroll sideways on mobile. */
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--color-border);
@@ -414,7 +394,6 @@ textarea.form-control {
   background-color: var(--color-surface-alt);
 }
 
-/* ---- Utilities ------------------------------------------------------------ */
 .stack   { display: flex; flex-direction: column; gap: var(--space-4); }
 .row     { display: flex; align-items: center; gap: var(--space-3); }
 .row-between { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }

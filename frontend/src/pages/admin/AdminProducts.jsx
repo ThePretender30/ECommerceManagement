@@ -6,13 +6,6 @@ import adminService from '../../services/adminService'
 import { useDebounce, useToast } from '../../hooks'
 import { formatCurrency, handleImageError, FALLBACK_IMAGE } from '../../utils/format'
 
-/**
- * Product management table.
- *
- * Unlike the storefront listing, this shows deactivated products too, so an
- * admin can see and revive something that was soft-deleted because it appears
- * in past orders.
- */
 export default function AdminProducts() {
   const toast = useToast()
 
@@ -50,8 +43,6 @@ export default function AdminProducts() {
   }, [])
 
   useEffect(load, [debouncedSearch, categoryId, page])
-
-  // Any filter change should return to the first page.
   useEffect(() => setPage(0), [debouncedSearch, categoryId])
 
   const handleStockSave = async (product) => {
@@ -75,8 +66,6 @@ export default function AdminProducts() {
     setDeleting(true)
     try {
       const response = await adminService.deleteProduct(deleteTarget.id)
-      // The backend reports whether it soft-deleted, so we can explain why the
-      // product may still be visible in order history.
       toast.success(response.message)
       setDeleteTarget(null)
       load()

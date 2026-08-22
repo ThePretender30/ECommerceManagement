@@ -4,12 +4,6 @@ import com.ecommerce.entity.ProductReview;
 
 import java.time.Instant;
 
-/**
- * A published review.
- *
- * <p>Only the reviewer's display name is exposed - never their email or phone - because
- * reviews are readable by anonymous visitors.
- */
 public record ReviewResponse(
         Long id,
         Long productId,

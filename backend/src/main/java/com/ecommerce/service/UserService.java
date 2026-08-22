@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Profile self-service for customers, and the user list for admins. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,19 +26,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // ---------------- Customer self-service ----------------
-
     @Transactional(readOnly = true)
     public UserResponse getProfile(Long userId) {
         return UserResponse.from(findUserOrThrow(userId));
     }
 
-    /**
-     * Updates the caller's own name and phone.
-     *
-     * <p>Email is intentionally not editable here: it is the login identifier and the
-     * subject of every issued token, so changing it would need a re-verification flow.
-     */
     @Transactional
     public UserResponse updateProfile(Long userId, String fullName, String phoneNumber) {
         User user = findUserOrThrow(userId);
@@ -48,7 +39,6 @@ public class UserService {
             user.setFullName(fullName.trim());
         }
         if (phoneNumber != null && !phoneNumber.isBlank()) {
-            // This is also the WhatsApp destination, so it must stay in E.164 form.
             if (!phoneNumber.trim().matches("^\\+[1-9]\\d{7,14}$")) {
                 throw new BadRequestException(
                         "Phone number must be in international format, e.g. +919876543210");
@@ -59,7 +49,6 @@ public class UserService {
         return UserResponse.from(userRepository.save(user));
     }
 
-    /** Changes the caller's password after confirming they know the current one. */
     @Transactional
     public void changePassword(Long userId, String currentPassword, String newPassword) {
         User user = findUserOrThrow(userId);
@@ -79,14 +68,11 @@ public class UserService {
         log.info("User {} changed their password", userId);
     }
 
-    // ---------------- Admin ----------------
-
     @Transactional(readOnly = true)
     public PagedResponse<UserResponse> listUsers(String query, int page, int size) {
-        Pageable pageable = PageRequest.of(
-                Math.max(page, 0),
-                Math.clamp(size, 1, MAX_PAGE_SIZE),
-                Sort.by(Sort.Direction.DESC, "createdAt"));
+        int validPage = Math.max(page, 0);
+        int validSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(validPage, validSize, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         return PagedResponse.from(
                 userRepository.searchUsers(query == null ? "" : query.trim(), pageable),
@@ -98,13 +84,6 @@ public class UserService {
         return UserResponse.from(findUserOrThrow(userId));
     }
 
-    /**
-     * Enables or disables an account.
-     *
-     * <p>Disabling is preferred over deletion: the user's orders and reviews stay intact,
-     * and {@code JwtAuthenticationFilter} re-checks {@code enabled} on every request, so
-     * access stops immediately even if they still hold a valid token.
-     */
     @Transactional
     public UserResponse setEnabled(Long adminId, Long userId, boolean enabled) {
         if (adminId.equals(userId) && !enabled) {

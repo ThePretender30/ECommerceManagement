@@ -4,14 +4,6 @@ import { setUnauthorizedHandler, tokenStorage, userStorage } from '../services/a
 
 export const AuthContext = createContext(null)
 
-/**
- * Holds who is signed in.
- *
- * The user is cached in localStorage so a page refresh does not flash the app
- * back to a signed-out state while /auth/me is in flight. The cache is then
- * revalidated against the server, because a stored user object says nothing
- * about whether the token is still good.
- */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => userStorage.get())
   const [loading, setLoading] = useState(true)
@@ -21,7 +13,6 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
-  // The axios interceptor calls this when the server rejects our token.
   useEffect(() => {
     setUnauthorizedHandler(() => {
       tokenStorage.clear()
@@ -29,7 +20,6 @@ export function AuthProvider({ children }) {
     })
   }, [])
 
-  // Revalidate the cached session on first load.
   useEffect(() => {
     const token = tokenStorage.get()
     if (!token) {
@@ -47,7 +37,6 @@ export function AuthProvider({ children }) {
         userStorage.set(fresh)
       })
       .catch(() => {
-        // Expired or invalid token; the interceptor has already cleared storage.
         if (!cancelled) setUser(null)
       })
       .finally(() => {
@@ -80,13 +69,10 @@ export function AuthProvider({ children }) {
     try {
       await authService.logout()
     } catch {
-      // Stateless JWT: the server has nothing to invalidate, so a failed call
-      // here must not stop the client from forgetting its token.
     }
     signOut()
   }, [signOut])
 
-  /** Applies a profile update without forcing a full reload. */
   const updateUser = useCallback((updated) => {
     setUser(updated)
     userStorage.set(updated)

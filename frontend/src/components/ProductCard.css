@@ -72,8 +72,7 @@
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   line-height: 1.4;
-  /* Clamp to two lines so tiles in a row stay the same height regardless of
-     how long the product name is. */
+  
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -112,7 +111,6 @@
   margin: 0 var(--space-4) var(--space-4);
 }
 
-/* ---- Grid used by every product listing ----------------------------------- */
 .product-grid {
   display: grid;
   gap: var(--space-4);

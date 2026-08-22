@@ -14,12 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * The customer's address book.
- *
- * <p>Like the cart, every lookup is scoped to the authenticated user id, so an address id
- * from another account is simply "not found" rather than accessible.
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -44,7 +38,6 @@ public class AddressService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
-        // The very first address a user saves becomes their default automatically.
         boolean isFirstAddress = addressRepository.countByUserId(userId) == 0;
         boolean makeDefault = isFirstAddress || Boolean.TRUE.equals(request.isDefault());
 
@@ -102,12 +95,6 @@ public class AddressService {
         return AddressResponse.from(addressRepository.save(address));
     }
 
-    /**
-     * Deletes an address.
-     *
-     * <p>Safe to do at any time: orders keep their own copy of the delivery address, so
-     * removing this row cannot alter where a past order was sent.
-     */
     @Transactional
     public void delete(Long userId, Long addressId) {
         Address address = findOwnedAddressOrThrow(userId, addressId);
@@ -115,7 +102,6 @@ public class AddressService {
 
         addressRepository.delete(address);
 
-        // Promote another address so the user always has a default to check out with.
         if (wasDefault) {
             addressRepository.findByUserIdOrderByIsDefaultDescIdDesc(userId).stream()
                     .findFirst()
@@ -127,7 +113,6 @@ public class AddressService {
         log.debug("User {} deleted address {}", userId, addressId);
     }
 
-    /** Ownership-scoped lookup used by this service and by checkout. */
     @Transactional(readOnly = true)
     public Address findOwnedAddressOrThrow(Long userId, Long addressId) {
         return addressRepository.findByIdAndUserId(addressId, userId)

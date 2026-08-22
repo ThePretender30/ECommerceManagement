@@ -3,14 +3,6 @@ package com.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * A product section. The six required sections (Books, Grocery, Kitchen Utensils,
- * Clothes, Electronics, Furniture) are seeded on first run, but admins can add more.
- *
- * <p>{@code slug} is the URL-safe identifier used by the frontend
- * ({@code /category/kitchen-utensils}), so links stay readable and stable even if the
- * display name is edited later.
- */
 @Entity
 @Table(name = "categories", uniqueConstraints = {
         @UniqueConstraint(name = "uk_categories_name", columnNames = "name"),

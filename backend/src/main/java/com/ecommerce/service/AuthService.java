@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
-/** Registration and login. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -36,13 +35,6 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    /**
-     * Creates a customer account and signs them straight in.
-     *
-     * <p>The role is assigned here, server-side, and is always ROLE_CUSTOMER. There is no
-     * code path through which a registration request can grant itself admin rights -
-     * promoting a user is a deliberate database or admin operation.
-     */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         String email = request.email().trim().toLowerCase();
@@ -59,7 +51,6 @@ public class AuthService {
         User user = User.builder()
                 .fullName(request.fullName().trim())
                 .email(email)
-                // Only the BCrypt hash is ever stored.
                 .password(passwordEncoder.encode(request.password()))
                 .phoneNumber(request.phoneNumber().trim())
                 .enabled(true)
@@ -72,13 +63,6 @@ public class AuthService {
         return buildAuthResponse(saved);
     }
 
-    /**
-     * Verifies credentials through Spring Security and returns a signed token.
-     *
-     * <p>Delegating to {@link AuthenticationManager} rather than comparing hashes by hand
-     * means the same {@code BadCredentialsException} is thrown for a wrong password and an
-     * unknown email, so the endpoint cannot be used to discover which emails are registered.
-     */
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         String email = request.email().trim().toLowerCase();
@@ -95,7 +79,6 @@ public class AuthService {
         return buildAuthResponse(user);
     }
 
-    /** Loads the signed-in user's own profile for {@code GET /api/auth/me}. */
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(Long userId) {
         return userRepository.findById(userId)

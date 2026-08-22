@@ -1,6 +1,5 @@
 import api from './api'
 
-/** Authentication and self-service profile calls. */
 export const authService = {
   register: (payload) => api.post('/auth/register', payload).then((r) => r.data),
 

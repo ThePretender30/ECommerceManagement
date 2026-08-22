@@ -2,7 +2,6 @@ package com.ecommerce.dto.address;
 
 import com.ecommerce.entity.Address;
 
-/** A saved address as shown in the profile and the checkout address picker. */
 public record AddressResponse(
         Long id,
         String fullName,

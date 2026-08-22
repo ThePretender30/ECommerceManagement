@@ -1,11 +1,5 @@
 package com.ecommerce.exception;
 
-/**
- * Thrown when a cart or checkout operation asks for more units than exist. Maps to 409.
- *
- * <p>The message names the product and the quantity actually available, so the frontend can
- * show something useful ("Only 3 left") instead of a generic failure.
- */
 public class InsufficientStockException extends RuntimeException {
 
     private final String productName;

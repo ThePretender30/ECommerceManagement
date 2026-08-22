@@ -7,25 +7,15 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/**
- * JWT settings, bound from {@code app.jwt.*}.
- *
- * <p>The secret has no default anywhere in the codebase - it must come from the
- * {@code APP_JWT_SECRET} environment variable. {@link #validate()} fails startup with an
- * actionable message rather than letting the app run with a weak or missing key, which is
- * how a "temporary" hard-coded secret usually ends up in production.
- */
 @ConfigurationProperties(prefix = "app.jwt")
 @Validated
 @Getter
 @Setter
 public class JwtProperties {
 
-    /** HS256 signing key. Minimum 32 characters (256 bits). */
     @NotBlank
     private String secret;
 
-    /** Access-token lifetime in milliseconds. */
     private long expirationMs = 86_400_000L;
 
     private String issuer = "ecommerce-api";

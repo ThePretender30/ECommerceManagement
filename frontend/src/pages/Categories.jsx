@@ -5,7 +5,6 @@ import { categoryService } from '../services/catalogService'
 import { handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './Categories.css'
 
-/** Full-width browse page for all six departments. */
 export default function Categories() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)

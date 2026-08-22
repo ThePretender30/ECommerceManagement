@@ -14,13 +14,6 @@ import { useAuth, useCart, useToast } from '../hooks'
 import { formatCurrency, formatDate, handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './ProductDetail.css'
 
-/**
- * Product detail, including the review section.
- *
- * Whether the current user may write a review is decided by the backend
- * (`canReview` on the summary) - the rule is "you have a delivered order
- * containing this product", which the client has no way to evaluate itself.
- */
 export default function ProductDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -51,7 +44,6 @@ export default function ProductDetail() {
       .then(([productData, summaryData]) => {
         setProduct(productData)
         setSummary(summaryData)
-        // Pre-fill the form when editing an existing review.
         if (summaryData.userReview) {
           setReviewForm({
             rating: summaryData.userReview.rating,
@@ -161,7 +153,6 @@ export default function ProductDetail() {
         ]}
       />
 
-      {/* ---------------- Main detail ---------------- */}
       <div className="detail">
         <div className="detail-media">
           <img
@@ -262,7 +253,6 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* ---------------- Reviews ---------------- */}
       <section className="reviews">
         <h2 className="reviews-title">Ratings and reviews</h2>
 
@@ -278,7 +268,6 @@ export default function ProductDetail() {
               </span>
             </div>
 
-            {/* Distribution bars, always all five rows so the shape is readable. */}
             <div className="reviews-breakdown">
               {[5, 4, 3, 2, 1].map((stars) => {
                 const count = summary?.ratingBreakdown?.[stars] ?? 0
@@ -296,7 +285,6 @@ export default function ProductDetail() {
               })}
             </div>
 
-            {/* The backend decides eligibility; we only render what it allows. */}
             {summary?.canReview && !showReviewForm && (
               <button
                 type="button"

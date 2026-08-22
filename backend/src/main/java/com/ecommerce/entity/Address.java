@@ -3,13 +3,6 @@ package com.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * A saved delivery address belonging to one user.
- *
- * <p>Note that orders do <em>not</em> keep a live reference to this row as their delivery
- * target - they copy the fields at checkout time (see {@link Order}). Editing or deleting
- * an address must never silently rewrite where a past order was shipped.
- */
 @Entity
 @Table(name = "addresses", indexes = @Index(name = "idx_addresses_user", columnList = "user_id"))
 @Getter
@@ -56,7 +49,6 @@ public class Address {
     @Builder.Default
     private boolean isDefault = false;
 
-    /** Flattens the address into the single-line form stored on an order snapshot. */
     public String toSingleLine() {
         StringBuilder sb = new StringBuilder(line1);
         if (line2 != null && !line2.isBlank()) {

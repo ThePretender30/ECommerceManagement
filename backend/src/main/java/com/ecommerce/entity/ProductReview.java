@@ -5,14 +5,6 @@ import lombok.*;
 
 import java.time.Instant;
 
-/**
- * A customer's rating and comment for a product they bought.
- *
- * <p>The unique constraint on (product_id, user_id) enforces one review per customer per
- * product at the database level. Eligibility - the reviewer must have a DELIVERED order
- * containing this product - is checked in {@code ReviewService}, because that rule spans
- * three tables and cannot be expressed as a column constraint.
- */
 @Entity
 @Table(name = "product_reviews",
         uniqueConstraints = @UniqueConstraint(name = "uk_reviews_product_user", columnNames = {"product_id", "user_id"}),
@@ -36,7 +28,6 @@ public class ProductReview {
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_reviews_user"))
     private User user;
 
-    /** 1 to 5 inclusive; also validated on the incoming DTO. */
     @Column(nullable = false)
     private Integer rating;
 

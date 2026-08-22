@@ -5,7 +5,6 @@ import orderService from '../services/orderService'
 import { formatCurrency, formatDateTime, handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './Orders.css'
 
-/** Success page shown immediately after checkout. */
 export default function OrderConfirmation() {
   const { id } = useParams()
   const [order, setOrder] = useState(null)
@@ -58,7 +57,6 @@ export default function OrderConfirmation() {
                     onError={handleImageError}
                   />
                   <div className="review-item-info">
-                    {/* Only link to products that still exist and are active. */}
                     {item.productAvailable && item.productId ? (
                       <Link to={`/products/${item.productId}`} className="review-item-name">
                         {item.productName}

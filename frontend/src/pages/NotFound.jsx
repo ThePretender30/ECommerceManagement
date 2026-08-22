@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { EmptyState } from '../components/Common'
 
-/** Catch-all route for unknown URLs. */
 export default function NotFound() {
   return (
     <div className="page container">

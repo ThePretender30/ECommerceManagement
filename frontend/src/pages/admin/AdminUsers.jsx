@@ -5,13 +5,6 @@ import adminService from '../../services/adminService'
 import { useAuth, useDebounce, useToast } from '../../hooks'
 import { formatDate } from '../../utils/format'
 
-/**
- * Registered user list.
- *
- * Accounts are disabled rather than deleted, so their orders and reviews stay
- * intact. Because the JWT filter re-checks the enabled flag on every request,
- * disabling takes effect immediately even if the user still holds a valid token.
- */
 export default function AdminUsers() {
   const { user: currentUser } = useAuth()
   const toast = useToast()
@@ -141,8 +134,6 @@ export default function AdminUsers() {
                           type="button"
                           className="btn btn-outline btn-sm"
                           onClick={() => setToggleTarget(user)}
-                          // The backend also refuses this; disabling the control
-                          // just avoids an error the admin cannot act on.
                           disabled={isSelf}
                           title={isSelf ? 'You cannot disable your own account' : undefined}
                         >

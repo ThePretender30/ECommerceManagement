@@ -6,14 +6,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-/**
- * The admin dashboard payload. Every figure is a real aggregate computed by the database -
- * none of it is placeholder data.
- *
- * @param ordersByStatus     status name to count, driving the status breakdown chart
- * @param topSellingProducts best sellers by units shipped, cancelled orders excluded
- * @param lowStockProducts   products at or below the low-stock threshold
- */
 public record AdminStatsResponse(
         BigDecimal totalRevenue,
         BigDecimal revenueLast30Days,

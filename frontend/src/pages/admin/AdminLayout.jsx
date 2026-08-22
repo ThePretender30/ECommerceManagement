@@ -12,13 +12,6 @@ const NAV_ITEMS = [
   { to: '/admin/notifications', label: 'Notifications', icon: '💬' },
 ]
 
-/**
- * Chrome for the admin area: sidebar navigation plus a top bar.
- *
- * Rendered as a layout route, so every admin page appears in the <Outlet />
- * without repeating this shell. The storefront navbar and footer are hidden
- * here (see App.jsx) because the admin area is a distinct workspace.
- */
 export default function AdminLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -31,7 +24,6 @@ export default function AdminLayout() {
 
   return (
     <div className="admin">
-      {/* Dimmer behind the mobile drawer. */}
       {sidebarOpen && (
         <div className="admin-overlay" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
       )}

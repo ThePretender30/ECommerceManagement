@@ -17,15 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * Reads {@code Authorization: Bearer <token>} on every request and, if the token is valid,
- * populates the {@link SecurityContextHolder} for the rest of the chain.
- *
- * <p>Note what this filter does <em>not</em> do: it never rejects a request. A missing or
- * bad token simply leaves the context unauthenticated, and the authorisation rules in
- * {@code SecurityConfig} decide whether that matters for the endpoint being called. That
- * separation is what allows public product browsing and protected checkout to coexist.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -48,8 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 if (jwtService.isTokenValid(token)) {
                     String email = jwtService.extractEmail(token);
-                    // Re-load from the database so a disabled or deleted account cannot keep
-                    // using a token that is still cryptographically valid.
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                     if (userDetails.isEnabled()) {

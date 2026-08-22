@@ -8,16 +8,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A placed order.
- *
- * <p>The table is named {@code orders} because {@code ORDER} is a reserved word in SQL.
- *
- * <p><b>Why the delivery address is copied, not referenced:</b> the {@code delivery*}
- * columns below are a snapshot taken at checkout. If a customer later edits or deletes the
- * saved {@link Address} they used, this order must still show where it was actually
- * shipped. {@code addressId} is kept only as a soft, nullable breadcrumb.
- */
 @Entity
 @Table(name = "orders",
         uniqueConstraints = @UniqueConstraint(name = "uk_orders_order_number", columnNames = "order_number"),
@@ -37,7 +27,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Human-facing reference shown to customers and used in WhatsApp messages. */
     @Column(name = "order_number", nullable = false, length = 40)
     private String orderNumber;
 
@@ -50,13 +39,9 @@ public class Order {
     @Builder.Default
     private OrderStatus status = OrderStatus.ORDER_PLACED;
 
-    /** Server-computed sum of all line totals. */
     @Column(name = "total_amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount;
 
-    // --- Delivery address snapshot (see class javadoc) ---------------------
-
-    /** Soft reference to the saved address used, if it still exists. */
     @Column(name = "address_id")
     private Long addressId;
 
@@ -84,13 +69,10 @@ public class Order {
     @Column(name = "delivery_country", nullable = false, length = 100)
     private String deliveryCountry;
 
-    // ----------------------------------------------------------------------
-
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
-    /** Append-only audit trail that powers the order tracking timeline. */
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderStatusHistory> statusHistory = new ArrayList<>();
@@ -123,7 +105,6 @@ public class Order {
         history.setOrder(this);
     }
 
-    /** Rebuilds the shipping address as one readable line, for UI and notifications. */
     public String getDeliveryAddressLine() {
         StringBuilder sb = new StringBuilder(deliveryLine1);
         if (deliveryLine2 != null && !deliveryLine2.isBlank()) {

@@ -7,14 +7,6 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Full order detail, used by the confirmation page, My Orders detail, tracking, and the
- * admin order screen.
- *
- * <p>{@code cancellable} is computed from the status state machine rather than being
- * re-derived in the UI, so the Cancel button can never appear for an order the backend
- * would refuse to cancel.
- */
 public record OrderResponse(
         Long id,
         String orderNumber,
@@ -30,18 +22,15 @@ public record OrderResponse(
         Instant updatedAt,
         boolean cancellable,
         List<StatusHistoryResponse> statusHistory,
-        // Populated for admin views only.
         Long customerId,
         String customerName,
         String customerEmail,
         String customerPhone
 ) {
-    /** Customer-facing view: no customer identity fields (the caller is the customer). */
     public static OrderResponse from(Order order) {
         return build(order, false);
     }
 
-    /** Admin-facing view: includes who placed the order. */
     public static OrderResponse forAdmin(Order order) {
         return build(order, true);
     }

@@ -1,4 +1,4 @@
-/* Vertical on mobile, horizontal from tablet up. */
+
 .timeline {
   display: flex;
   flex-direction: column;
@@ -63,7 +63,6 @@
   font-style: italic;
 }
 
-/* ---- States --------------------------------------------------------------- */
 .timeline-step.is-completed .timeline-dot {
   background-color: var(--color-success);
   border-color: var(--color-success);
@@ -90,7 +89,6 @@
   font-weight: var(--weight-bold);
 }
 
-/* A cancelled order's final marker is red, not blue. */
 .timeline.is-cancelled .timeline-step.is-current .timeline-dot {
   background-color: var(--color-danger);
   border-color: var(--color-danger);
@@ -101,7 +99,6 @@
   color: var(--color-danger);
 }
 
-/* ---- Horizontal layout on wider screens ----------------------------------- */
 @media (min-width: 768px) {
   .timeline {
     flex-direction: row;
@@ -124,7 +121,6 @@
     position: relative;
   }
 
-  /* The connector runs from the centre of this dot to the next one. */
   .timeline-line {
     position: absolute;
     left: 50%;

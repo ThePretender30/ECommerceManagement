@@ -16,13 +16,6 @@ const EMPTY_FORM = {
   active: true,
 }
 
-/**
- * Create/edit form for a product. One component serves both because the fields
- * are identical - the presence of an `:id` route param decides the mode.
- *
- * Rating and review count are deliberately absent: they are derived from real
- * customer reviews and are not something an admin can set.
- */
 export default function AdminProductForm() {
   const { id } = useParams()
   const isEdit = Boolean(id)
@@ -41,7 +34,6 @@ export default function AdminProductForm() {
       .listCategories()
       .then((data) => {
         setCategories(data)
-        // Default the category selector so creating a product is one less click.
         if (!isEdit && data.length > 0) {
           setForm((current) => ({ ...current, categoryId: String(data[0].id) }))
         }
@@ -229,7 +221,6 @@ export default function AdminProductForm() {
             </div>
           </section>
 
-          {/* Live preview so an admin can see the image before saving. */}
           <aside className="card">
             <div className="card-header">Preview</div>
             <div className="card-body">

@@ -7,16 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Chooses which {@link WhatsAppService} the application runs with.
- *
- * <p>The decision is made once, at startup, from configuration - not per message. That
- * keeps the branch out of the hot path and makes the active mode obvious in the startup
- * log, which is the first thing to check when messages are not arriving.
- *
- * <p>A missing credential downgrades the feature to log-only rather than failing startup:
- * the rest of the application is fully usable without a Twilio account.
- */
 @Configuration
 @Slf4j
 public class NotificationConfig {

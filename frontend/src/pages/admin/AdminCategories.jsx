@@ -7,13 +7,6 @@ import { handleImageError, FALLBACK_IMAGE } from '../../utils/format'
 
 const EMPTY_FORM = { name: '', slug: '', description: '', imageUrl: '' }
 
-/**
- * Category management.
- *
- * A category holding products cannot be deleted - the backend refuses rather
- * than cascading, so deleting a category can never quietly remove a shelf full
- * of live products. The UI disables the button and explains why.
- */
 export default function AdminCategories() {
   const toast = useToast()
 

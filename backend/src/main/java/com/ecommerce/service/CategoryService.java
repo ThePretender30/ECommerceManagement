@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-/** Category browsing plus admin category management. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -25,7 +25,6 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
 
-    /** All categories with their live product counts, for the home page and filters. */
     @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAllByOrderByNameAsc().stream()
@@ -47,7 +46,6 @@ public class CategoryService {
         return CategoryResponse.from(category, productRepository.countByCategoryId(id));
     }
 
-    /** Loads the entity itself, for other services that need to attach a product to it. */
     @Transactional(readOnly = true)
     public Category findCategoryOrThrow(Long id) {
         return categoryRepository.findById(id)
@@ -84,19 +82,16 @@ public class CategoryService {
         Category category = findCategoryOrThrow(id);
         String name = request.name().trim();
 
-        // Allow the category to keep its own name; reject a clash with a different row.
-        categoryRepository.findByNameIgnoreCase(name)
-                .filter(existing -> !existing.getId().equals(id))
-                .ifPresent(existing -> {
-                    throw new DuplicateResourceException("A category named '" + name + "' already exists.");
-                });
+        Optional<Category> existingByName = categoryRepository.findByNameIgnoreCase(name);
+        if (existingByName.isPresent() && !existingByName.get().getId().equals(id)) {
+            throw new DuplicateResourceException("A category named '" + name + "' already exists.");
+        }
 
         String slug = resolveSlug(request.slug(), name);
-        categoryRepository.findBySlug(slug)
-                .filter(existing -> !existing.getId().equals(id))
-                .ifPresent(existing -> {
-                    throw new DuplicateResourceException("A category with the URL '" + slug + "' already exists.");
-                });
+        Optional<Category> existingBySlug = categoryRepository.findBySlug(slug);
+        if (existingBySlug.isPresent() && !existingBySlug.get().getId().equals(id)) {
+            throw new DuplicateResourceException("A category with the URL '" + slug + "' already exists.");
+        }
 
         category.setName(name);
         category.setSlug(slug);
@@ -108,12 +103,6 @@ public class CategoryService {
         return CategoryResponse.from(saved, productRepository.countByCategoryId(id));
     }
 
-    /**
-     * Deletes a category only when nothing depends on it.
-     *
-     * <p>Refusing rather than cascading is deliberate: silently deleting a category should
-     * never take a shelf full of live products with it.
-     */
     @Transactional
     public void delete(Long id) {
         Category category = findCategoryOrThrow(id);
@@ -129,7 +118,6 @@ public class CategoryService {
         log.info("Admin deleted category id={}", id);
     }
 
-    /** Uses the supplied slug when given, otherwise derives one from the name. */
     private String resolveSlug(String requestedSlug, String name) {
         String slug = (requestedSlug == null || requestedSlug.isBlank())
                 ? SlugUtils.toSlug(name)

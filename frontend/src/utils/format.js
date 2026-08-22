@@ -1,5 +1,3 @@
-/** Shared formatting helpers, so currency and dates look the same everywhere. */
-
 const currencyFormatter = new Intl.NumberFormat('en-IN', {
   style: 'currency',
   currency: 'INR',
@@ -31,20 +29,23 @@ export const formatDateTime = (isoString) => {
   })
 }
 
-/** Maps an order status to the badge class that colours it. */
 export const statusBadgeClass = (status) => {
   switch (status) {
-    case 'DELIVERED':        return 'badge-success'
-    case 'CANCELLED':        return 'badge-danger'
+    case 'DELIVERED':
+      return 'badge-success'
+    case 'CANCELLED':
+      return 'badge-danger'
     case 'DISPATCHED':
-    case 'OUT_FOR_DELIVERY': return 'badge-info'
+    case 'OUT_FOR_DELIVERY':
+      return 'badge-info'
     case 'PROCESSING':
-    case 'ORDER_CONFIRMED':  return 'badge-primary'
-    default:                 return 'badge-warning'
+    case 'ORDER_CONFIRMED':
+      return 'badge-primary'
+    default:
+      return 'badge-warning'
   }
 }
 
-/** Placeholder shown when a product has no image or the URL fails to load. */
 export const FALLBACK_IMAGE =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
@@ -55,7 +56,6 @@ export const FALLBACK_IMAGE =
      </svg>`
   )
 
-/** Swaps in the placeholder once, without looping if the fallback also fails. */
 export const handleImageError = (event) => {
   if (event.target.src !== FALLBACK_IMAGE) {
     event.target.src = FALLBACK_IMAGE

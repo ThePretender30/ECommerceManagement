@@ -9,17 +9,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Real WhatsApp delivery through Twilio.
- *
- * <p>Wired in by {@code NotificationConfig} only when {@code app.whatsapp.enabled} is true
- * and all three credentials are present. Credentials come from environment variables and
- * are never logged.
- *
- * <p>All failures are caught and converted into a {@code FAILED} result rather than
- * propagating. A notification is a side effect of an order, and an outage at Twilio must
- * never surface to a customer as a failed checkout.
- */
 @RequiredArgsConstructor
 @Slf4j
 public class TwilioWhatsAppService implements WhatsAppService {
@@ -51,7 +40,6 @@ public class TwilioWhatsAppService implements WhatsAppService {
             return SendResult.sent(sent.getSid());
 
         } catch (ApiException ex) {
-            // Twilio's own rejection - bad number, un-joined sandbox, template required, etc.
             String detail = "Twilio error %s: %s".formatted(ex.getCode(), ex.getMessage());
             log.warn("WhatsApp delivery to {} failed. {}", maskPhone(to), detail);
             return SendResult.failed(detail);
@@ -67,13 +55,11 @@ public class TwilioWhatsAppService implements WhatsAppService {
         return "TWILIO";
     }
 
-    /** Twilio requires the {@code whatsapp:} scheme on the recipient as well as the sender. */
     private String normaliseRecipient(String phone) {
         String trimmed = phone.trim();
         return trimmed.startsWith("whatsapp:") ? trimmed : "whatsapp:" + trimmed;
     }
 
-    /** Keeps full phone numbers out of the logs. */
     private String maskPhone(String phone) {
         if (phone == null || phone.length() < 4) {
             return "***";

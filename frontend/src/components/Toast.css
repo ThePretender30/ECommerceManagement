@@ -10,8 +10,6 @@
   pointer-events: none;
 }
 
-/* On wider screens the stack sits in the bottom-right corner instead of
-   spanning the full width. */
 @media (min-width: 640px) {
   .toast-stack {
     left: auto;

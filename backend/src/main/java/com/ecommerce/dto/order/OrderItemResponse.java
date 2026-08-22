@@ -4,13 +4,6 @@ import com.ecommerce.entity.OrderItem;
 
 import java.math.BigDecimal;
 
-/**
- * One purchased line.
- *
- * <p>Every field here is read from the order's own snapshot columns, not from the live
- * product - which is why a past order still shows the price the customer actually paid.
- * {@code productAvailable} tells the UI whether a "buy again" link can be offered.
- */
 public record OrderItemResponse(
         Long id,
         Long productId,

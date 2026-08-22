@@ -14,14 +14,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.Instant;
 
-/**
- * Returns a JSON 403 when an authenticated user lacks the required role - for example a
- * customer calling any {@code /api/admin/**} endpoint.
- *
- * <p>The distinction from 401 matters to the frontend: 401 means "log in", 403 means
- * "you are logged in but this is not yours", and only the first should bounce the user to
- * the login page.
- */
 @Component
 @RequiredArgsConstructor
 public class RestAccessDeniedHandler implements AccessDeniedHandler {

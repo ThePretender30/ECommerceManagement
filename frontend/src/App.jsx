@@ -3,7 +3,6 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { AdminRoute, GuestRoute, ProtectedRoute } from './components/RouteGuards'
 
-// Public pages
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -12,7 +11,6 @@ import ProductList from './pages/ProductList'
 import ProductDetail from './pages/ProductDetail'
 import NotFound from './pages/NotFound'
 
-// Customer pages
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
@@ -21,7 +19,6 @@ import OrderTracking from './pages/OrderTracking'
 import Profile from './pages/Profile'
 import Addresses from './pages/Addresses'
 
-// Admin pages
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminProducts from './pages/admin/AdminProducts'
@@ -32,22 +29,8 @@ import AdminOrderDetail from './pages/admin/AdminOrderDetail'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminNotifications from './pages/admin/AdminNotifications'
 
-/**
- * The route table.
- *
- * Routes fall into four groups:
- *   - public   : browsing the storefront, no account needed
- *   - guest    : login and register, redirected away once signed in
- *   - protected: anything tied to a specific person (cart, orders, profile)
- *   - admin    : the dashboard, additionally requiring ROLE_ADMIN
- *
- * The guards are UX only - the backend enforces the same rules independently.
- */
 export default function App() {
   const location = useLocation()
-
-  // The admin area brings its own sidebar chrome, so the storefront navbar and
-  // footer are hidden there.
   const isAdminArea = location.pathname.startsWith('/admin')
 
   return (
@@ -56,17 +39,14 @@ export default function App() {
 
       <main>
         <Routes>
-          {/* ---------------- Public ---------------- */}
           <Route path="/" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/:id" element={<ProductDetail />} />
 
-          {/* ---------------- Guest only ------------ */}
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
 
-          {/* ---------------- Signed in ------------- */}
           <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route
@@ -78,7 +58,6 @@ export default function App() {
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/addresses" element={<ProtectedRoute><Addresses /></ProtectedRoute>} />
 
-          {/* ---------------- Admin ----------------- */}
           <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
@@ -91,7 +70,6 @@ export default function App() {
             <Route path="notifications" element={<AdminNotifications />} />
           </Route>
 
-          {/* ---------------- Fallback -------------- */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

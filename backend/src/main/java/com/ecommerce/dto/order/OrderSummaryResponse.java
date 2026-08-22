@@ -5,12 +5,6 @@ import com.ecommerce.entity.Order;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * Lightweight row for the My Orders and admin order <em>lists</em>.
- *
- * <p>Kept separate from {@link OrderResponse} so a list of 50 orders does not drag every
- * line item and status-history row across the wire.
- */
 public record OrderSummaryResponse(
         Long id,
         String orderNumber,

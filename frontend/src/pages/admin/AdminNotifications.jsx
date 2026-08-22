@@ -11,13 +11,6 @@ const STATUS_FILTERS = [
   { value: 'SKIPPED', label: 'Skipped' },
 ]
 
-/**
- * The WhatsApp notification audit log.
- *
- * A row exists for every attempt, including ones that were skipped because
- * Twilio is not configured — which is what makes the messaging pipeline
- * inspectable on a machine with no Twilio account at all.
- */
 export default function AdminNotifications() {
   const [result, setResult] = useState(null)
   const [summary, setSummary] = useState(null)

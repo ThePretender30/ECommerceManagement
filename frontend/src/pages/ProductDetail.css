@@ -1,4 +1,4 @@
-/* ---- Main detail ---------------------------------------------------------- */
+
 .detail {
   display: grid;
   gap: var(--space-6);
@@ -129,7 +129,6 @@
   font-weight: var(--weight-medium);
 }
 
-/* ---- Reviews -------------------------------------------------------------- */
 .reviews {
   margin-top: var(--space-16);
   padding-top: var(--space-8);
@@ -228,7 +227,6 @@
   gap: var(--space-4);
 }
 
-/* ---- Review form ---------------------------------------------------------- */
 .review-form {
   margin-bottom: var(--space-4);
 }
@@ -253,7 +251,6 @@
   color: var(--color-accent);
 }
 
-/* ---- Review list ---------------------------------------------------------- */
 .review-item {
   padding: var(--space-4) 0;
   border-bottom: 1px solid var(--color-border);

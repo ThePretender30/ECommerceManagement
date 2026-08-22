@@ -3,12 +3,6 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth, useCart } from '../hooks'
 import './Navbar.css'
 
-/**
- * Top navigation: brand, search, account menu and cart.
- *
- * On mobile the links collapse into a drawer and the search bar moves onto its
- * own row, so the header stays usable at 375px without horizontal scrolling.
- */
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
   const { itemCount } = useCart()
@@ -20,14 +14,11 @@ export default function Navbar() {
   const [accountOpen, setAccountOpen] = useState(false)
   const accountRef = useRef(null)
 
-  // Close both menus whenever the route changes, so a navigation never leaves
-  // a dropdown hanging open over the new page.
   useEffect(() => {
     setMenuOpen(false)
     setAccountOpen(false)
   }, [location.pathname])
 
-  // Close the account dropdown on an outside click.
   useEffect(() => {
     if (!accountOpen) return
     const handleClick = (event) => {

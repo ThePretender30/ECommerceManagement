@@ -10,12 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-/**
- * {@code JpaSpecificationExecutor} is the important part here: browsing, category
- * filtering, keyword search, price/rating/brand filters and sorting are all served by a
- * single dynamic query built in {@code ProductSpecification}, instead of a combinatorial
- * explosion of {@code findByCategoryAndPriceBetweenAndBrand...} methods.
- */
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     Page<Product> findByActiveTrue(Pageable pageable);
@@ -28,7 +22,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     long countByCategoryId(Long categoryId);
 
-    /** Distinct brand list for a category, used to populate the filter sidebar. */
     @Query("""
             SELECT DISTINCT p.brand FROM Product p
             WHERE p.active = true AND p.brand IS NOT NULL AND p.brand <> ''
@@ -37,7 +30,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
             """)
     List<String> findDistinctBrands(@Param("categoryId") Long categoryId);
 
-    /** Products at or below the given stock level - drives the admin low-stock panel. */
     List<Product> findByActiveTrueAndStockLessThanEqualOrderByStockAsc(Integer threshold);
 
     long countByActiveTrueAndStockLessThanEqual(Integer threshold);

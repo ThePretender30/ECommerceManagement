@@ -1,11 +1,6 @@
 import api from './api'
 
-/** Checkout, order history and tracking for the signed-in customer. */
 export const orderService = {
-  /**
-   * Places an order. The payload carries only an address choice - never line
-   * items or prices, which the backend reads from the server-side cart.
-   */
   place: (payload) => api.post('/orders', payload).then((r) => r.data),
 
   list: (page = 0, size = 10) =>

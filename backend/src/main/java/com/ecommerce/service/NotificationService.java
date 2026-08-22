@@ -13,13 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Read access to the notification audit trail.
- *
- * <p>Writing rows is the job of {@code OrderNotificationListener}; this service only
- * exposes them to the admin dashboard so delivery problems are visible rather than
- * buried in server logs.
- */
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -39,14 +32,12 @@ public class NotificationService {
         return PagedResponse.from(results, NotificationResponse::from);
     }
 
-    /** Delivery attempts for one order, shown on the admin order detail screen. */
     @Transactional(readOnly = true)
     public List<NotificationResponse> listForOrder(Long orderId) {
         return notificationRepository.findByOrderIdOrderByCreatedAtDesc(orderId)
                 .stream().map(NotificationResponse::from).toList();
     }
 
-    /** Counts per outcome, so the dashboard can surface a failing WhatsApp integration. */
     @Transactional(readOnly = true)
     public Map<String, Long> countsByStatus() {
         return Map.of(

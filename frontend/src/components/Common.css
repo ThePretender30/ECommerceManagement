@@ -1,4 +1,4 @@
-/* ---- Loader --------------------------------------------------------------- */
+
 .loader {
   display: flex;
   align-items: center;
@@ -23,7 +23,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* ---- Empty / error states -------------------------------------------------- */
 .empty-state,
 .error-state {
   text-align: center;
@@ -54,7 +53,6 @@
   margin-top: var(--space-6);
 }
 
-/* ---- Star rating ----------------------------------------------------------- */
 .stars {
   display: inline-flex;
   align-items: center;
@@ -62,8 +60,6 @@
   white-space: nowrap;
 }
 
-/* The filled row is absolutely positioned over the empty one and clipped by
-   width, which is what makes fractional ratings render honestly. */
 .stars-track {
   position: relative;
   display: inline-block;
@@ -99,7 +95,6 @@
   font-size: 0.85em;
 }
 
-/* ---- Quantity stepper ------------------------------------------------------ */
 .qty-stepper {
   display: inline-flex;
   align-items: center;
@@ -140,7 +135,6 @@
   place-items: center;
 }
 
-/* ---- Pagination ------------------------------------------------------------ */
 .pagination {
   display: flex;
   align-items: center;
@@ -184,7 +178,6 @@
   color: var(--color-text-subtle);
 }
 
-/* ---- Breadcrumbs ----------------------------------------------------------- */
 .breadcrumbs {
   display: flex;
   align-items: center;

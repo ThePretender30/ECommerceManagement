@@ -3,13 +3,6 @@ import Toast from '../components/Toast'
 
 export const ToastContext = createContext(null)
 
-/**
- * App-wide transient notifications.
- *
- * Kept in context rather than per-page state so that an action which navigates
- * away (placing an order, deleting a product) can still report its result on
- * the page the user lands on.
- */
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([])
   const nextId = useRef(1)

@@ -18,13 +18,6 @@ const EMPTY_ADDRESS = {
   country: 'India',
 }
 
-/**
- * Review and place the order.
- *
- * The request sends only an address choice - never line items or prices. The
- * backend rebuilds the order from the server-side cart, which is what makes it
- * impossible to check out at a price the client invented.
- */
 export default function Checkout() {
   const { items, subtotal, total, checkoutAllowed, loading: cartLoading, reset } = useCart()
   const toast = useToast()
@@ -45,7 +38,6 @@ export default function Checkout() {
       .list()
       .then((data) => {
         setAddresses(data)
-        // Pre-select the default address so the common path is one click.
         const preferred = data.find((a) => a.isDefault) ?? data[0]
         if (preferred) {
           setSelectedAddressId(preferred.id)
@@ -57,7 +49,6 @@ export default function Checkout() {
       .finally(() => setLoadingAddresses(false))
   }, [])
 
-  // An empty cart has nothing to check out; send the user back.
   useEffect(() => {
     if (!cartLoading && items.length === 0) {
       navigate('/cart', { replace: true })
@@ -88,7 +79,6 @@ export default function Checkout() {
 
       const order = await orderService.place(payload)
 
-      // The backend has already emptied the cart; clear the local mirror.
       reset()
       toast.success(`Order ${order.orderNumber} placed successfully!`)
       navigate(`/orders/${order.id}/confirmation`, { replace: true })
@@ -121,7 +111,6 @@ export default function Checkout() {
 
       <form className="checkout" onSubmit={handlePlaceOrder}>
         <div className="checkout-main">
-          {/* ---------------- Address ---------------- */}
           <section className="card">
             <div className="card-header">Delivery address</div>
             <div className="card-body">
@@ -288,7 +277,6 @@ export default function Checkout() {
             </div>
           </section>
 
-          {/* ---------------- Review ---------------- */}
           <section className="card mt-6">
             <div className="card-header">
               Review your order
@@ -317,7 +305,6 @@ export default function Checkout() {
           </section>
         </div>
 
-        {/* ---------------- Summary ---------------- */}
         <aside className="checkout-summary">
           <h2 className="cart-summary-title">Order total</h2>
 

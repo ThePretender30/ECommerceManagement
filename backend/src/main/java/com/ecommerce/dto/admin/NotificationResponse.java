@@ -4,12 +4,6 @@ import com.ecommerce.entity.Notification;
 
 import java.time.Instant;
 
-/**
- * A notification delivery record for the admin audit screen.
- *
- * <p>Because a row is written for skipped and failed attempts too, this view answers
- * "did the customer actually hear about this?" rather than only listing successes.
- */
 public record NotificationResponse(
         Long id,
         String channel,

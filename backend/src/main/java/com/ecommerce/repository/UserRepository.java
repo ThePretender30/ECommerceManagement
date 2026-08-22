@@ -16,7 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    /** Case-insensitive search across name, email and phone, for the admin user list. */
     @Query("""
             SELECT u FROM User u
             WHERE :q IS NULL OR :q = ''

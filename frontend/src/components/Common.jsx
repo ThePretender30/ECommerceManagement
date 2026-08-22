@@ -1,13 +1,6 @@
 import { Link } from 'react-router-dom'
 import './Common.css'
 
-/**
- * Small presentational pieces that appear on nearly every page. Grouped in one
- * file because each is only a few lines and they are almost always imported
- * together.
- */
-
-/** Spinner for in-flight requests. `fullPage` centres it in the viewport. */
 export function Loader({ label = 'Loading…', fullPage = false }) {
   return (
     <div className={fullPage ? 'loader loader-full' : 'loader'} role="status">
@@ -17,12 +10,6 @@ export function Loader({ label = 'Loading…', fullPage = false }) {
   )
 }
 
-/**
- * Shown when a list legitimately has nothing in it.
- *
- * Distinct from an error state: an empty cart is not a failure, and telling the
- * user what to do next is more useful than an empty box.
- */
 export function EmptyState({ icon = '📦', title, message, action }) {
   return (
     <div className="empty-state">
@@ -34,7 +21,6 @@ export function EmptyState({ icon = '📦', title, message, action }) {
   )
 }
 
-/** Inline error panel with an optional retry. */
 export function ErrorState({ message, onRetry }) {
   return (
     <div className="error-state">
@@ -49,12 +35,6 @@ export function ErrorState({ message, onRetry }) {
   )
 }
 
-/**
- * Star rating display.
- *
- * Renders half-stars by clipping a filled row over an empty one, which keeps a
- * 3.5 average honest instead of rounding it to 4.
- */
 export function StarRating({ value = 0, count, size = 'md', showValue = true }) {
   const rating = Math.max(0, Math.min(5, Number(value) || 0))
   const percent = (rating / 5) * 100
@@ -72,7 +52,6 @@ export function StarRating({ value = 0, count, size = 'md', showValue = true }) 
   )
 }
 
-/** Numeric stepper used by the cart and the product detail page. */
 export function QuantityStepper({ value, onChange, min = 1, max = 99, disabled = false }) {
   const decrease = () => onChange(Math.max(min, value - 1))
   const increase = () => onChange(Math.min(max, value + 1))
@@ -100,12 +79,6 @@ export function QuantityStepper({ value, onChange, min = 1, max = 99, disabled =
   )
 }
 
-/**
- * Page navigation.
- *
- * Shows at most five numbered buttons, windowed around the current page, so the
- * control stays a fixed width whether there are 3 pages or 300.
- */
 export function Pagination({ page, totalPages, onPageChange }) {
   if (totalPages <= 1) return null
 
@@ -171,7 +144,6 @@ export function Pagination({ page, totalPages, onPageChange }) {
   )
 }
 
-/** Trail of links back up the hierarchy. */
 export function Breadcrumbs({ items }) {
   return (
     <nav className="breadcrumbs" aria-label="Breadcrumb">

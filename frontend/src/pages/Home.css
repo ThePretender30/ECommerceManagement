@@ -1,4 +1,4 @@
-/* ---- Hero ----------------------------------------------------------------- */
+
 .hero {
   background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%);
   color: var(--color-text-inverse);
@@ -6,7 +6,6 @@
   overflow: hidden;
 }
 
-/* Soft radial highlight, purely decorative. */
 .hero::after {
   content: '';
   position: absolute;
@@ -78,7 +77,6 @@
   border-color: var(--color-text-inverse);
 }
 
-/* ---- Value props ---------------------------------------------------------- */
 .value-props {
   display: grid;
   gap: var(--space-4);
@@ -124,7 +122,6 @@
   line-height: 1.5;
 }
 
-/* ---- Sections ------------------------------------------------------------- */
 .home-section {
   margin-top: var(--space-12);
 }
@@ -164,7 +161,6 @@
   color: var(--color-primary-dark);
 }
 
-/* ---- Category grid -------------------------------------------------------- */
 .category-grid {
   display: grid;
   gap: var(--space-4);
@@ -225,7 +221,6 @@
   color: var(--color-text-muted);
 }
 
-/* ---- Promo band ----------------------------------------------------------- */
 .promo-band {
   margin-top: var(--space-12);
   padding: var(--space-8);

@@ -22,32 +22,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/** Product browsing, search and admin product management. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProductService {
 
-    /** Products at or below this stock level appear in the admin low-stock panel. */
     public static final int LOW_STOCK_THRESHOLD = 5;
-
     private static final int MAX_PAGE_SIZE = 100;
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
     private final OrderItemRepository orderItemRepository;
 
-    /**
-     * The one method behind browsing, category pages, search, filtering and sorting.
-     * See {@link ProductSpecification} for how the filters combine.
-     */
     @Transactional(readOnly = true)
     public PagedResponse<ProductResponse> search(ProductFilterRequest filter, int page, int size,
                                                  boolean includeInactive) {
-        Pageable pageable = PageRequest.of(
-                Math.max(page, 0),
-                Math.clamp(size, 1, MAX_PAGE_SIZE),
-                resolveSort(filter.sort()));
+        int validPage = Math.max(page, 0);
+        int validSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(validPage, validSize, resolveSort(filter.sort()));
 
         Page<Product> results = productRepository.findAll(
                 ProductSpecification.withFilters(filter, includeInactive), pageable);
@@ -59,13 +51,11 @@ public class ProductService {
     public ProductResponse getById(Long id) {
         Product product = findProductOrThrow(id);
         if (!product.isActive()) {
-            // Soft-deleted products are invisible to the storefront.
             throw new ResourceNotFoundException("Product", id);
         }
         return ProductResponse.from(product);
     }
 
-    /** Admin variant: returns the product even when it is inactive. */
     @Transactional(readOnly = true)
     public ProductResponse getByIdForAdmin(Long id) {
         return ProductResponse.from(findProductOrThrow(id));
@@ -77,24 +67,17 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", id));
     }
 
-    // ------------------------------------------------------------------
-    //  Home page feeds - all backed by real queries, not curated lists
-    // ------------------------------------------------------------------
-
-    /** Highest rated products, used for the "Featured" row. */
     @Transactional(readOnly = true)
     public List<ProductResponse> getFeatured() {
         return productRepository.findTop8ByActiveTrueOrderByAverageRatingDescReviewCountDesc()
                 .stream().map(ProductResponse::from).toList();
     }
 
-    /** Most reviewed products, used for the "Popular" row. */
     @Transactional(readOnly = true)
     public List<ProductResponse> getPopular() {
         List<Product> popular =
                 productRepository.findTop8ByActiveTrueAndReviewCountGreaterThanOrderByReviewCountDesc(0);
 
-        // A brand-new shop has no reviews yet; fall back to newest so the row is never empty.
         if (popular.isEmpty()) {
             popular = productRepository.findTop8ByActiveTrueOrderByDateAddedDesc();
         }
@@ -107,15 +90,10 @@ public class ProductService {
                 .stream().map(ProductResponse::from).toList();
     }
 
-    /** Distinct brands, optionally scoped to a category, for the filter sidebar. */
     @Transactional(readOnly = true)
     public List<String> getBrands(Long categoryId) {
         return productRepository.findDistinctBrands(categoryId);
     }
-
-    // ------------------------------------------------------------------
-    //  Admin operations
-    // ------------------------------------------------------------------
 
     @Transactional
     public ProductResponse create(ProductRequest request) {
@@ -170,15 +148,6 @@ public class ProductService {
         return ProductResponse.from(saved);
     }
 
-    /**
-     * Removes a product, preserving order history.
-     *
-     * <p>If the product has ever been ordered it is deactivated rather than deleted -
-     * a hard delete would either break the foreign key or blank out the item on past
-     * invoices. Products never ordered are removed outright, so a typo can be cleaned up.
-     *
-     * @return true if the product was soft-deleted (deactivated), false if hard-deleted
-     */
     @Transactional
     public boolean delete(Long id) {
         Product product = findProductOrThrow(id);
@@ -195,19 +164,11 @@ public class ProductService {
         return false;
     }
 
-    /** Low-stock products for the admin dashboard. */
     @Transactional(readOnly = true)
     public List<Product> getLowStockProducts() {
         return productRepository.findByActiveTrueAndStockLessThanEqualOrderByStockAsc(LOW_STOCK_THRESHOLD);
     }
 
-    /**
-     * Maps the {@code sort} query parameter to a real {@link Sort}.
-     *
-     * <p>An allow-list, not free-form input: an unknown value falls back to newest rather
-     * than being passed to the database, which keeps arbitrary property names out of the
-     * generated ORDER BY.
-     */
     private Sort resolveSort(String sort) {
         if (sort == null || sort.isBlank()) {
             return Sort.by(Sort.Direction.DESC, "dateAdded");

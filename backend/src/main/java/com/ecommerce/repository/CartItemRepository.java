@@ -9,7 +9,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
 
-    /** Ownership-scoped: the item must belong to the caller's own cart. */
     Optional<CartItem> findByIdAndCartId(Long id, Long cartId);
 
     void deleteByCartId(Long cartId);

@@ -12,15 +12,6 @@ import {
   FALLBACK_IMAGE,
 } from '../../utils/format'
 
-/**
- * Admin order detail: full order, status control, and the notification log.
- *
- * The status dropdown is populated from the backend's own state machine
- * (`allowedNext`), so the UI can only ever offer transitions the server would
- * accept — an illegal jump is impossible to select rather than merely rejected.
- *
- * Changing the status here is what triggers the customer's WhatsApp message.
- */
 export default function AdminOrderDetail() {
   const { id } = useParams()
   const toast = useToast()
@@ -77,12 +68,10 @@ export default function AdminOrderDetail() {
   if (error) return <ErrorState message={error} onRetry={load} />
   if (!order) return null
 
-  // The transitions the backend says are legal from the current status.
   const currentStatusInfo = statuses.find((s) => s.value === order.status)
   const allowedNext = currentStatusInfo?.allowedNext ?? []
   const statusLabelOf = (value) => statuses.find((s) => s.value === value)?.label ?? value
 
-  // Reuse the customer tracking timeline by deriving its steps from history.
   const happyPath = [
     'ORDER_PLACED', 'ORDER_CONFIRMED', 'PROCESSING',
     'DISPATCHED', 'OUT_FOR_DELIVERY', 'DELIVERED',
@@ -126,7 +115,6 @@ export default function AdminOrderDetail() {
 
       <div className="admin-grid split">
         <div className="stack">
-          {/* ---------------- Items ---------------- */}
           <section className="card">
             <div className="card-header">Items ({order.items.length})</div>
             <div className="card-body">
@@ -156,7 +144,6 @@ export default function AdminOrderDetail() {
             </div>
           </section>
 
-          {/* ---------------- Notification log ---------------- */}
           <section className="card">
             <div className="card-header">WhatsApp notifications</div>
             <div className="card-body">
@@ -200,7 +187,6 @@ export default function AdminOrderDetail() {
         </div>
 
         <div className="stack">
-          {/* ---------------- Status control ---------------- */}
           <section className="card">
             <div className="card-header">Update status</div>
             <div className="card-body">
@@ -260,7 +246,6 @@ export default function AdminOrderDetail() {
             </div>
           </section>
 
-          {/* ---------------- Customer ---------------- */}
           <section className="card">
             <div className="card-header">Customer</div>
             <div className="card-body">
@@ -281,7 +266,6 @@ export default function AdminOrderDetail() {
             </div>
           </section>
 
-          {/* ---------------- Delivery ---------------- */}
           <section className="card">
             <div className="card-header">Delivery address</div>
             <div className="card-body">

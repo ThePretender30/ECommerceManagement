@@ -4,7 +4,6 @@ import java.text.Normalizer;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-/** Converts a display name into a URL-safe slug: "Kitchen Utensils" to "kitchen-utensils". */
 public final class SlugUtils {
 
     private static final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
@@ -19,7 +18,6 @@ public final class SlugUtils {
         if (input == null || input.isBlank()) {
             return "";
         }
-        // Strip accents so "Café" becomes "cafe" rather than losing the character.
         String normalised = Normalizer.normalize(input.trim(), Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 

@@ -2,15 +2,7 @@ import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import './Modal.css'
 
-/**
- * Accessible dialog rendered through a portal.
- *
- * The portal matters: rendering into document.body escapes any ancestor with
- * `overflow: hidden` or a stacking context, which is the usual reason a modal
- * appears clipped or behind other content.
- */
 export default function Modal({ open, title, onClose, children, footer, size = 'md' }) {
-  // Close on Escape, and stop the page behind from scrolling while open.
   useEffect(() => {
     if (!open) return
 
@@ -37,7 +29,6 @@ export default function Modal({ open, title, onClose, children, footer, size = '
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        // Clicks inside must not bubble to the backdrop's close handler.
         onClick={(event) => event.stopPropagation()}
       >
         <div className="modal-header">
@@ -56,7 +47,6 @@ export default function Modal({ open, title, onClose, children, footer, size = '
   )
 }
 
-/** Yes/no confirmation built on top of Modal. */
 export function ConfirmDialog({
   open,
   title = 'Are you sure?',

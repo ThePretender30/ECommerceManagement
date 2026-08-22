@@ -14,13 +14,6 @@ import {
 } from '../utils/format'
 import './Orders.css'
 
-/**
- * Order detail and tracking.
- *
- * Two calls back this page: the order itself, and its tracking timeline. The
- * timeline's step states come from the backend, so a cancelled order shows an
- * honest short timeline rather than a progress bar frozen halfway.
- */
 export default function OrderTracking() {
   const { id } = useParams()
   const toast = useToast()
@@ -95,7 +88,6 @@ export default function OrderTracking() {
         </div>
       </div>
 
-      {/* ---------------- Tracking ---------------- */}
       <section className="card mb-6">
         <div className="card-header">Order tracking</div>
         <div className="card-body">
@@ -104,7 +96,6 @@ export default function OrderTracking() {
       </section>
 
       <div className="order-detail-grid">
-        {/* ---------------- Items ---------------- */}
         <section className="card">
           <div className="card-header">Items ({order.items.length})</div>
           <div className="card-body">
@@ -146,7 +137,6 @@ export default function OrderTracking() {
           </div>
         </section>
 
-        {/* ---------------- Delivery + history ---------------- */}
         <div className="stack">
           <section className="card">
             <div className="card-header">Delivery address</div>

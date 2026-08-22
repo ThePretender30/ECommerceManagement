@@ -3,15 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth, useToast } from '../hooks'
 import './Auth.css'
 
-/**
- * Account creation.
- *
- * The phone number is required and must be in E.164 form because it is the
- * destination for WhatsApp order notifications - the hint under the field
- * explains that rather than leaving the format rule as a mystery.
- *
- * Note there is no role selector: the backend always assigns ROLE_CUSTOMER.
- */
 export default function Register() {
   const { register } = useAuth()
   const toast = useToast()
@@ -40,7 +31,6 @@ export default function Register() {
     setError(null)
     setFieldErrors({})
 
-    // Confirmation is a client-only concern - the API has no such field.
     if (form.password !== form.confirmPassword) {
       setFieldErrors({ confirmPassword: 'Passwords do not match.' })
       return

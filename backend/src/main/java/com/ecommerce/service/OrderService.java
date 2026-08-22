@@ -26,22 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Checkout and the order lifecycle.
- *
- * <p>The two things worth understanding in this class:
- *
- * <ol>
- *   <li><b>Checkout is one atomic transaction.</b> Stock validation, stock decrement,
- *       order creation and cart clearing either all happen or none do. If the last unit of
- *       any item was sold while the customer was on the checkout page, the whole thing
- *       rolls back and nothing is half-written.</li>
- *   <li><b>Notifications are events, not calls.</b> Status changes publish an
- *       {@link OrderStatusChangedEvent} instead of invoking the WhatsApp sender directly.
- *       The listener runs after commit, on another thread - see
- *       {@code OrderNotificationListener} for why that ordering matters.</li>
- * </ol>
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -57,18 +41,6 @@ public class OrderService {
     private final AddressService addressService;
     private final ApplicationEventPublisher eventPublisher;
 
-    // ==================================================================
-    //  Checkout
-    // ==================================================================
-
-    /**
-     * Converts the caller's cart into an order.
-     *
-     * <p>Prices and quantities come from the server-side cart, never from the request, so
-     * a tampered payload cannot change what is charged. Every line is re-validated against
-     * live stock here even though {@code CartService} already checked - between adding to
-     * the cart and paying, another customer may have taken the last unit.
-     */
     @Transactional
     public OrderResponse placeOrder(Long userId, PlaceOrderRequest request) {
 
@@ -84,7 +56,6 @@ public class OrderService {
 
         User user = cart.getUser();
 
-        // ---- Resolve the delivery address ----------------------------
         Address deliveryAddress;
         if (request.addressId() != null) {
             deliveryAddress = addressService.findOwnedAddressOrThrow(userId, request.addressId());
@@ -95,7 +66,6 @@ public class OrderService {
             }
         }
 
-        // ---- Build the order, validating and decrementing stock ------
         Order order = Order.builder()
                 .orderNumber(generateOrderNumber())
                 .user(user)
@@ -115,7 +85,6 @@ public class OrderService {
         BigDecimal total = BigDecimal.ZERO;
 
         for (CartItem cartItem : cart.getItems()) {
-            // Re-read the product inside this transaction to get its committed stock.
             Product product = productRepository.findById(cartItem.getProduct().getId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Product", cartItem.getProduct().getId()));
@@ -128,12 +97,10 @@ public class OrderService {
 
             int quantity = cartItem.getQuantity();
             if (!product.hasStockFor(quantity)) {
-                // Rolls back everything done so far in this transaction.
                 throw new InsufficientStockException(
                         product.getName(), quantity, product.getStock() == null ? 0 : product.getStock());
             }
 
-            // Prices are frozen here - later price edits will not alter this order.
             BigDecimal unitPrice = product.getPrice();
             BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
 
@@ -155,7 +122,6 @@ public class OrderService {
 
         order.setTotalAmount(total);
 
-        // First entry in the tracking timeline.
         order.addStatusHistory(OrderStatusHistory.builder()
                 .status(OrderStatus.ORDER_PLACED)
                 .note("Order placed by customer.")
@@ -163,7 +129,6 @@ public class OrderService {
 
         Order saved = orderRepository.save(order);
 
-        // The cart has become an order; empty it.
         cart.getItems().clear();
 
         log.info("Order {} placed by user {} for {} item(s), total {}",
@@ -173,10 +138,6 @@ public class OrderService {
 
         return OrderResponse.from(saved);
     }
-
-    // ==================================================================
-    //  Customer queries
-    // ==================================================================
 
     @Transactional(readOnly = true)
     public PagedResponse<OrderSummaryResponse> getUserOrders(Long userId, int page, int size) {
@@ -195,13 +156,6 @@ public class OrderService {
         return OrderTrackingResponse.from(findOwnedOrderOrThrow(userId, orderId));
     }
 
-    /**
-     * Customer-initiated cancellation.
-     *
-     * <p>Only legal before dispatch, and it restores the stock it took. After dispatch the
-     * goods have physically left, so returning them to inventory automatically would
-     * corrupt the stock count - those cases go through support instead.
-     */
     @Transactional
     public OrderResponse cancelOrder(Long userId, Long orderId, String reason) {
         Order order = findOwnedOrderOrThrow(userId, orderId);
@@ -231,10 +185,6 @@ public class OrderService {
         return OrderResponse.from(saved);
     }
 
-    // ==================================================================
-    //  Admin operations
-    // ==================================================================
-
     @Transactional(readOnly = true)
     public PagedResponse<OrderSummaryResponse> getAllOrders(OrderStatus status, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.clamp(size, 1, MAX_PAGE_SIZE));
@@ -251,13 +201,6 @@ public class OrderService {
         return OrderResponse.forAdmin(order);
     }
 
-    /**
-     * Advances an order through its lifecycle.
-     *
-     * <p>The requested transition is validated against {@link OrderStatus#canTransitionTo}
-     * before anything is written, so an order cannot skip stages or move backwards even if
-     * a malformed request asks it to.
-     */
     @Transactional
     public OrderResponse updateOrderStatus(Long orderId, UpdateOrderStatusRequest request) {
         Order order = orderRepository.findWithDetailsById(orderId)
@@ -278,7 +221,6 @@ public class OrderService {
                                     describeAllowed(previous)));
         }
 
-        // An admin cancellation puts the reserved stock back, exactly as a customer one does.
         if (target == OrderStatus.CANCELLED) {
             restoreStock(order);
         }
@@ -299,16 +241,11 @@ public class OrderService {
         return OrderResponse.forAdmin(saved);
     }
 
-    // ==================================================================
-    //  Helpers
-    // ==================================================================
-
     private Order findOwnedOrderOrThrow(Long userId, Long orderId) {
         return orderRepository.findByIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
     }
 
-    /** Returns every line's quantity to inventory. Used by both cancellation paths. */
     private void restoreStock(Order order) {
         for (OrderItem item : order.getItems()) {
             Product product = item.getProduct();
@@ -320,12 +257,6 @@ public class OrderService {
         log.debug("Restored stock for cancelled order {}", order.getOrderNumber());
     }
 
-    /**
-     * Publishes the change for the notification pipeline.
-     *
-     * <p>Values are copied out of the entity here because the listener runs after commit,
-     * on another thread, where lazy associations would no longer be loadable.
-     */
     private void publishStatusEvent(Order order, OrderStatus previous, OrderStatus current) {
         User user = order.getUser();
         eventPublisher.publishEvent(new OrderStatusChangedEvent(
@@ -339,7 +270,6 @@ public class OrderService {
         ));
     }
 
-    /** Wraps a checkout-time address that may never be saved, so it can be snapshotted. */
     private Address buildTransientAddress(User user, AddressRequest request) {
         return Address.builder()
                 .user(user)
@@ -355,12 +285,6 @@ public class OrderService {
                 .build();
     }
 
-    /**
-     * Builds a readable, unique order reference such as {@code ORD-20260817-4821}.
-     *
-     * <p>Preferred over exposing the numeric primary key: sequential ids would let anyone
-     * count how many orders the shop has taken, and guess neighbouring order numbers.
-     */
     private String generateOrderNumber() {
         for (int attempt = 0; attempt < 5; attempt++) {
             String candidate = "ORD-%s-%04d".formatted(
@@ -370,7 +294,6 @@ public class OrderService {
                 return candidate;
             }
         }
-        // Collisions are vanishingly unlikely; fall back to a timestamp-based value.
         return "ORD-%s-%d".formatted(ORDER_NUMBER_DATE.format(Instant.now()), System.nanoTime() % 100_000);
     }
 

@@ -20,14 +20,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Translates exceptions from anywhere in the application into the single {@link ApiError}
- * response shape.
- *
- * <p>Centralising this keeps controllers free of try/catch blocks and guarantees that an
- * unexpected failure never leaks a stack trace or SQL fragment to the client - the last
- * handler logs the detail server-side and returns a deliberately generic message.
- */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -42,7 +34,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null);
     }
 
-    /** 409 rather than 400: the request was valid, the world changed underneath it. */
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ApiError> handleStock(InsufficientStockException ex, HttpServletRequest request) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request, null);
@@ -53,7 +44,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request, null);
     }
 
-    /** Bean-validation failures become a per-field map the frontend can render inline. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, String> fieldErrors = new HashMap<>();
@@ -78,7 +68,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiError> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
-        // Deliberately vague: never reveal whether it was the email or the password that was wrong.
         return build(HttpStatus.UNAUTHORIZED, "Invalid email or password.", request, null);
     }
 
@@ -92,7 +81,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.FORBIDDEN, "You do not have permission to perform this action.", request, null);
     }
 
-    /** A unique-constraint violation that slipped past the service-layer check. */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex,
                                                         HttpServletRequest request) {
@@ -101,13 +89,11 @@ public class GlobalExceptionHandler {
                 "That operation conflicts with existing data. The record may already exist.", request, null);
     }
 
-    /** Static-resource misses (e.g. /favicon.ico) should not be logged as server errors. */
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiError> handleNoResource(NoResourceFoundException ex, HttpServletRequest request) {
         return build(HttpStatus.NOT_FOUND, "Resource not found.", request, null);
     }
 
-    /** Catch-all. Logs the real cause, returns a generic message. */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception on {} {}", request.getMethod(), request.getRequestURI(), ex);

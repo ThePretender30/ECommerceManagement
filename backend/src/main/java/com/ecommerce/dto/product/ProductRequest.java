@@ -4,16 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-/**
- * Admin payload for creating or updating a product.
- *
- * <p>Note the absence of {@code averageRating}, {@code reviewCount} and {@code dateAdded}:
- * those are system-owned values derived from real reviews and the creation timestamp. Not
- * accepting them means an admin cannot fabricate a five-star rating on a product with no
- * reviews.
- */
 public record ProductRequest(
-
         @NotBlank(message = "Product name is required")
         @Size(max = 200, message = "Product name must not exceed 200 characters")
         String name,
@@ -39,6 +30,5 @@ public record ProductRequest(
         @Min(value = 0, message = "Stock cannot be negative")
         Integer stock,
 
-        /** Defaults to true in the service when omitted; false soft-hides the product. */
         Boolean active
 ) {}

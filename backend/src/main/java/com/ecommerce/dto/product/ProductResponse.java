@@ -5,12 +5,6 @@ import com.ecommerce.entity.Product;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * Full product view for listings and the detail page.
- *
- * <p>{@code inStock} is derived server-side rather than leaving the frontend to compare
- * {@code stock > 0}, so the "out of stock" rule is defined in exactly one place.
- */
 public record ProductResponse(
         Long id,
         String name,

@@ -1,12 +1,5 @@
 import api from './api'
 
-/**
- * Product browsing, search and reviews.
- *
- * `list` mirrors the backend's single filter endpoint. Undefined/empty values
- * are stripped so the URL only carries filters that are actually applied - which
- * keeps shareable URLs clean and avoids sending `brand=` as an empty filter.
- */
 export const productService = {
   list: (params = {}) => {
     const query = {}
@@ -27,7 +20,6 @@ export const productService = {
   brands: (categoryId) =>
     api.get('/products/brands', { params: categoryId ? { categoryId } : {} }).then((r) => r.data),
 
-  // ---- Reviews ----
   reviews: (productId, page = 0, size = 10) =>
     api.get(`/products/${productId}/reviews`, { params: { page, size } }).then((r) => r.data),
 

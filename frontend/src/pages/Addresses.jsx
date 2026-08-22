@@ -17,12 +17,6 @@ const EMPTY_FORM = {
   isDefault: false,
 }
 
-/**
- * The address book.
- *
- * Deleting an address is safe at any time: orders keep their own snapshot of
- * where they were shipped, so removing a saved address cannot rewrite history.
- */
 export default function Addresses() {
   const toast = useToast()
 
@@ -195,7 +189,6 @@ export default function Addresses() {
         </div>
       )}
 
-      {/* ---------------- Create / edit dialog ---------------- */}
       <Modal
         open={modalOpen}
         title={editing ? 'Edit address' : 'Add a new address'}

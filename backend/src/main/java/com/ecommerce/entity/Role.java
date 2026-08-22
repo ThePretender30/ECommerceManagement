@@ -3,7 +3,6 @@ package com.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-/** A grantable authority. Seeded once by {@code DataSeeder}; never created at runtime. */
 @Entity
 @Table(name = "roles", uniqueConstraints = @UniqueConstraint(name = "uk_roles_name", columnNames = "name"))
 @Getter

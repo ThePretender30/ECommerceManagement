@@ -4,13 +4,6 @@ import { useAuth, useCart, useToast } from '../hooks'
 import { formatCurrency, handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './ProductCard.css'
 
-/**
- * A single product tile, used by every grid in the app.
- *
- * The add-to-cart button lives here so the action is available from listings
- * without a detour through the detail page. A signed-out visitor is sent to
- * login with a `redirect` back to where they were, so the click is not lost.
- */
 export default function ProductCard({ product }) {
   const { isAuthenticated } = useAuth()
   const { addItem } = useCart()
@@ -21,7 +14,6 @@ export default function ProductCard({ product }) {
   const lowStock = product.inStock && product.stock <= 5
 
   const handleAddToCart = async (event) => {
-    // The whole card is a link; stop the click from navigating as well.
     event.preventDefault()
     event.stopPropagation()
 

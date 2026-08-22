@@ -1,7 +1,5 @@
 import api from './api'
 
-/** Categories, cart and addresses - the rest of the customer-facing API. */
-
 export const categoryService = {
   list: () => api.get('/categories').then((r) => r.data),
   getBySlug: (slug) => api.get(`/categories/slug/${slug}`).then((r) => r.data),
@@ -14,7 +12,6 @@ export const cartService = {
   addItem: (productId, quantity = 1) =>
     api.post('/cart/items', { productId, quantity }).then((r) => r.data),
 
-  // Absolute quantity, not a delta - so a retried request stays idempotent.
   updateItem: (itemId, quantity) =>
     api.put(`/cart/items/${itemId}`, { quantity }).then((r) => r.data),
 

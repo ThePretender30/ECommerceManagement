@@ -8,12 +8,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * One persistent cart per user, created lazily on first access.
- *
- * <p>The cart is always resolved from the authenticated principal, never from an id sent
- * by the client - that is what stops one customer from reading another's cart.
- */
 @Entity
 @Table(name = "carts", uniqueConstraints = @UniqueConstraint(name = "uk_carts_user", columnNames = "user_id"))
 @Getter
@@ -31,10 +25,6 @@ public class Cart {
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_carts_user"))
     private User user;
 
-    /**
-     * orphanRemoval means deleting an item from this list deletes the row, so
-     * "remove from cart" needs no explicit repository call.
-     */
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
@@ -67,7 +57,6 @@ public class Cart {
         item.setCart(null);
     }
 
-    /** Server-side total. The client never sends prices. */
     public BigDecimal calculateSubtotal() {
         return items.stream()
                 .map(CartItem::getLineTotal)

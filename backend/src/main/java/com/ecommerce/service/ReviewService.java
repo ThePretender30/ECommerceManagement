@@ -24,16 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-/**
- * Product reviews.
- *
- * <p>The rule that gives reviews their value: a customer may only review a product they
- * have actually received. {@code OrderRepository.hasUserPurchasedProduct} checks for a
- * DELIVERED order containing the product, so ratings cannot be manufactured by someone who
- * never bought the item.
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -49,28 +42,32 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public PagedResponse<ReviewResponse> getProductReviews(Long productId, int page, int size) {
         requireProductExists(productId);
-        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.clamp(size, 1, MAX_PAGE_SIZE));
+        int validPage = Math.max(page, 0);
+        int validSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(validPage, validSize);
         Page<ProductReview> reviews = reviewRepository.findByProductIdOrderByCreatedAtDesc(productId, pageable);
         return PagedResponse.from(reviews, ReviewResponse::from);
     }
 
-    /**
-     * Rating summary for the product detail page.
-     *
-     * @param userId the signed-in user, or null for an anonymous visitor
-     */
     @Transactional(readOnly = true)
     public ReviewSummaryResponse getSummary(Long productId, Long userId) {
         Product product = requireProductExists(productId);
 
-        // Distribution across the five star values, always with all five keys present so
-        // the UI can render empty bars rather than missing rows.
         Map<Integer, Long> breakdown = new LinkedHashMap<>();
         for (int stars = 5; stars >= 1; stars--) {
             breakdown.put(stars, 0L);
         }
-        reviewRepository.findByProductIdOrderByCreatedAtDesc(productId, Pageable.unpaged())
-                .forEach(review -> breakdown.merge(review.getRating(), 1L, Long::sum));
+
+        List<ProductReview> allReviews = reviewRepository
+                .findByProductIdOrderByCreatedAtDesc(productId, Pageable.unpaged())
+                .getContent();
+
+        for (ProductReview review : allReviews) {
+            Integer rating = review.getRating();
+            if (rating != null && breakdown.containsKey(rating)) {
+                breakdown.put(rating, breakdown.get(rating) + 1L);
+            }
+        }
 
         ReviewResponse ownReview = null;
         boolean canReview = false;
@@ -79,7 +76,6 @@ public class ReviewService {
             ownReview = reviewRepository.findByProductIdAndUserId(productId, userId)
                     .map(ReviewResponse::from)
                     .orElse(null);
-            // Eligible only if they bought and received it, and have not already reviewed it.
             canReview = ownReview == null && orderRepository.hasUserPurchasedProduct(userId, productId);
         }
 
@@ -93,7 +89,6 @@ public class ReviewService {
         );
     }
 
-    /** Creates a review, or updates the caller's existing one for the same product. */
     @Transactional
     public ReviewResponse submitReview(Long userId, Long productId, ReviewRequest request) {
         Product product = requireProductExists(productId);
@@ -126,7 +121,6 @@ public class ReviewService {
         return ReviewResponse.from(saved);
     }
 
-    /** Lets a customer withdraw their own review. */
     @Transactional
     public void deleteOwnReview(Long userId, Long productId) {
         ProductReview review = reviewRepository.findByProductIdAndUserId(productId, userId)
@@ -134,18 +128,11 @@ public class ReviewService {
                         "You have not reviewed this product."));
 
         reviewRepository.delete(review);
-        reviewRepository.flush();   // ensure the row is gone before recomputing the average
+        reviewRepository.flush();
         recalculateProductRating(productId);
         log.info("User {} deleted their review for product {}", userId, productId);
     }
 
-    /**
-     * Rewrites the product's cached {@code averageRating} and {@code reviewCount}.
-     *
-     * <p>Called after every review change, which is what keeps the denormalised values on
-     * {@link Product} exactly consistent with the underlying rows - the reason listings can
-     * sort and filter by rating without an expensive join.
-     */
     private void recalculateProductRating(Long productId) {
         Double average = reviewRepository.calculateAverageRating(productId);
         long count = reviewRepository.countByProductId(productId);

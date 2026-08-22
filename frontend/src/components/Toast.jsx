@@ -7,12 +7,6 @@ const ICONS = {
   info: 'i',
 }
 
-/**
- * Renders the stack of active toasts.
- *
- * `role="status"` with `aria-live="polite"` means screen readers announce new
- * messages without interrupting whatever the user is doing.
- */
 export default function Toast({ toasts, onDismiss }) {
   if (!toasts.length) return null
 

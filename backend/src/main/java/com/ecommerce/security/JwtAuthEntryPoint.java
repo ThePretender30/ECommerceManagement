@@ -14,14 +14,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.Instant;
 
-/**
- * Returns a JSON 401 when an unauthenticated caller hits a protected endpoint.
- *
- * <p>Without this, Spring Security's default would send an HTML error page or a
- * {@code WWW-Authenticate} challenge that pops up a browser login dialog - neither of
- * which a React client can handle. Emitting the same {@link ApiError} shape as every other
- * failure lets the axios interceptor treat it uniformly.
- */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint {

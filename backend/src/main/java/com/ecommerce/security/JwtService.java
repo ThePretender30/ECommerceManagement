@@ -14,14 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Issues and validates the HS256 access tokens used for stateless authentication.
- *
- * <p>The token carries the user's email as subject plus their id and roles as claims.
- * Roles travel inside the signed token so authorising a request needs no database lookup,
- * and the signature makes those claims tamper-proof - a client cannot edit the payload to
- * grant itself {@code ROLE_ADMIN} without invalidating the signature.
- */
 @Service
 @Slf4j
 public class JwtService {
@@ -37,7 +29,6 @@ public class JwtService {
         this.signingKey = Keys.hmacShaKeyFor(properties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    /** Builds a signed token for a freshly authenticated user. */
     public String generateToken(Long userId, String email, List<String> roles) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + properties.getExpirationMs());
@@ -53,11 +44,6 @@ public class JwtService {
                 .compact();
     }
 
-    /**
-     * Verifies the signature and expiry, returning the claims.
-     *
-     * @throws JwtException if the token is malformed, expired, or was not signed by us.
-     */
     public Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)
@@ -67,7 +53,6 @@ public class JwtService {
                 .getPayload();
     }
 
-    /** Non-throwing validity check used by the request filter. */
     public boolean isTokenValid(String token) {
         try {
             parseClaims(token);

@@ -17,19 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * The shopping cart.
- *
- * <p>Every method here takes the caller's {@code userId} from the authenticated principal
- * and resolves the cart from it. No endpoint accepts a cart id, so there is no request a
- * customer could craft to read or modify someone else's cart - the ownership check is
- * structural rather than something a future endpoint might forget to write.
- *
- * <p>Stock is checked here as a courtesy so the customer finds out early, but the
- * authoritative check happens again inside the checkout transaction in
- * {@link OrderService} - between adding to a cart and paying, someone else may have bought
- * the last unit.
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -45,12 +32,6 @@ public class CartService {
         return CartResponse.from(getOrCreateCart(userId));
     }
 
-    /**
-     * Adds a product, or increases its quantity if it is already in the cart.
-     *
-     * <p>The increment is deliberate: clicking "Add to cart" twice on a product page should
-     * mean two of that item, not a second identical line.
-     */
     @Transactional
     public CartResponse addItem(Long userId, AddToCartRequest request) {
         Cart cart = getOrCreateCart(userId);
@@ -87,12 +68,10 @@ public class CartService {
         return CartResponse.from(reloadCart(userId));
     }
 
-    /** Sets an absolute quantity for one line. */
     @Transactional
     public CartResponse updateItemQuantity(Long userId, Long itemId, Integer quantity) {
         Cart cart = getOrCreateCart(userId);
 
-        // Scoped to this cart: a guessed item id belonging to someone else simply is not found.
         CartItem item = cartItemRepository.findByIdAndCartId(itemId, cart.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item", itemId));
 
@@ -111,7 +90,6 @@ public class CartService {
         CartItem item = cartItemRepository.findByIdAndCartId(itemId, cart.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item", itemId));
 
-        // orphanRemoval on Cart.items turns this into a DELETE.
         cart.removeItem(item);
         cartRepository.save(cart);
 
@@ -127,12 +105,6 @@ public class CartService {
         return CartResponse.from(reloadCart(userId));
     }
 
-    /**
-     * Returns the user's cart, creating an empty one on first use.
-     *
-     * <p>Package-private overload used by {@link OrderService} at checkout, so both share
-     * exactly one definition of "this user's cart".
-     */
     @Transactional
     public Cart getOrCreateCart(Long userId) {
         return cartRepository.findByUserId(userId).orElseGet(() -> {
@@ -144,7 +116,6 @@ public class CartService {
         });
     }
 
-    /** Re-reads through the entity graph so the response includes fully loaded items. */
     private Cart reloadCart(Long userId) {
         return cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart for user", userId));

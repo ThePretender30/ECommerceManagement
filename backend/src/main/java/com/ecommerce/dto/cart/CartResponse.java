@@ -5,15 +5,6 @@ import com.ecommerce.entity.Cart;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * The whole cart, with every monetary figure computed on the server.
- *
- * <p>{@code checkoutAllowed} is the single answer to "can this cart be ordered right now",
- * so the Cart and Checkout pages cannot disagree about it.
- *
- * @param subtotal  sum of all line totals
- * @param total     final payable amount (equals subtotal - no shipping or tax modelled)
- */
 public record CartResponse(
         Long id,
         List<CartItemResponse> items,

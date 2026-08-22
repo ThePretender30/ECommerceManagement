@@ -2,24 +2,11 @@ package com.ecommerce.notification;
 
 import com.ecommerce.entity.OrderStatus;
 
-/**
- * The message a customer receives for each order event.
- *
- * <p>Kept in one class so the wording can be reviewed and changed without touching order
- * logic, and so every status is guaranteed to have a message.
- */
 public final class WhatsAppMessageTemplates {
 
     private WhatsAppMessageTemplates() {
     }
 
-    /**
-     * Builds the notification body for a status change.
-     *
-     * @param customerName the recipient's name, used to personalise the greeting
-     * @param orderNumber  the human-facing order reference
-     * @param status       the status just reached
-     */
     public static String forStatus(String customerName, String orderNumber, OrderStatus status) {
         String firstName = firstName(customerName);
 
@@ -68,7 +55,6 @@ public final class WhatsAppMessageTemplates {
         };
     }
 
-    /** Uses just the first name so the greeting reads naturally. */
     private static String firstName(String fullName) {
         if (fullName == null || fullName.isBlank()) {
             return "there";

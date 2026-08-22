@@ -19,13 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Aggregates for the admin dashboard.
- *
- * <p>Every number is computed by the database with a GROUP BY or SUM rather than by
- * loading rows into memory and counting them in Java - the dashboard stays fast as the
- * order table grows.
- */
 @Service
 @RequiredArgsConstructor
 public class AdminStatsService {
@@ -42,24 +35,22 @@ public class AdminStatsService {
     public AdminStatsResponse getDashboardStats() {
         Instant thirtyDaysAgo = Instant.now().minus(30, ChronoUnit.DAYS);
 
-        // --- Counts per status, in a single grouped query ------------------
         Map<String, Long> ordersByStatus = new LinkedHashMap<>();
         for (OrderStatus status : OrderStatus.values()) {
-            ordersByStatus.put(status.name(), 0L);   // keep every status present, even at zero
+            ordersByStatus.put(status.name(), 0L);
         }
-        orderRepository.countGroupedByStatus()
-                .forEach(row -> ordersByStatus.put(row.getStatus().name(), row.getCount()));
+        for (OrderRepository.StatusCount row : orderRepository.countGroupedByStatus()) {
+            ordersByStatus.put(row.getStatus().name(), row.getCount());
+        }
 
         long totalOrders = ordersByStatus.values().stream().mapToLong(Long::longValue).sum();
 
-        // "Pending" means anything still moving through the pipeline.
         long pendingOrders = ordersByStatus.get(OrderStatus.ORDER_PLACED.name())
                 + ordersByStatus.get(OrderStatus.ORDER_CONFIRMED.name())
                 + ordersByStatus.get(OrderStatus.PROCESSING.name())
                 + ordersByStatus.get(OrderStatus.DISPATCHED.name())
                 + ordersByStatus.get(OrderStatus.OUT_FOR_DELIVERY.name());
 
-        // --- Best sellers --------------------------------------------------
         List<AdminStatsResponse.TopSellingProduct> topProducts =
                 orderRepository.findTopSellingProducts(PageRequest.of(0, TOP_PRODUCT_COUNT)).stream()
                         .map(row -> new AdminStatsResponse.TopSellingProduct(
@@ -69,7 +60,6 @@ public class AdminStatsService {
                                 row.getRevenue() == null ? BigDecimal.ZERO : row.getRevenue()))
                         .toList();
 
-        // --- Restocking watchlist ------------------------------------------
         List<AdminStatsResponse.LowStockProduct> lowStock =
                 productRepository.findByActiveTrueAndStockLessThanEqualOrderByStockAsc(
                                 ProductService.LOW_STOCK_THRESHOLD).stream()
@@ -80,7 +70,6 @@ public class AdminStatsService {
                                 product.getStock()))
                         .toList();
 
-        // --- Latest activity -----------------------------------------------
         List<OrderSummaryResponse> recentOrders =
                 orderRepository.findAllByOrderByPlacedAtDesc(PageRequest.of(0, RECENT_ORDER_COUNT))
                         .map(OrderSummaryResponse::forAdmin)

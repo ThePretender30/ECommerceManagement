@@ -17,18 +17,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Populates a brand-new database with the data the application cannot run without
- * (the two roles, the six required categories, an admin account) plus a realistic starter
- * catalogue.
- *
- * <p>Every step is <b>idempotent</b> - it checks before inserting - so restarting the
- * application never duplicates rows or overwrites an admin's edits.
- *
- * <p>The seeded products are genuine database rows: the admin can edit, restock or delete
- * them, and customers order them like anything else. They are starting inventory, not
- * hard-coded frontend placeholders.
- */
 @Component
 @RequiredArgsConstructor
 @Order(1)
@@ -51,8 +39,6 @@ public class DataSeeder implements CommandLineRunner {
         seedProducts();
     }
 
-    // ------------------------------------------------------------------
-
     private void seedRoles() {
         for (RoleName roleName : RoleName.values()) {
             roleRepository.findByName(roleName).orElseGet(() -> {
@@ -62,14 +48,6 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
-    /**
-     * Creates the bootstrap administrator.
-     *
-     * <p>The password is read from {@code ADMIN_PASSWORD} and BCrypt-hashed before storage.
-     * If that variable is absent, seeding is skipped with a warning rather than falling
-     * back to a default password - a well-known default admin password would be a far
-     * worse outcome than having no admin yet.
-     */
     private void seedAdminUser() {
         String email = adminProperties.getEmail().trim().toLowerCase();
 
@@ -106,7 +84,6 @@ public class DataSeeder implements CommandLineRunner {
         log.info("Seeded administrator account: {}", email);
     }
 
-    /** The six required product sections. */
     private void seedCategories() {
         record Seed(String name, String slug, String description, String imageUrl) {}
 
@@ -144,12 +121,6 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
-    /**
-     * Starter inventory across all six categories.
-     *
-     * <p>Only runs when the products table is empty, so an admin who deletes a seeded
-     * product will not find it resurrected on the next restart.
-     */
     private void seedProducts() {
         if (productRepository.count() > 0) {
             return;
@@ -218,7 +189,6 @@ public class DataSeeder implements CommandLineRunner {
         log.info("Seeded {} starter products", productRepository.count());
     }
 
-    /** One row of starter inventory. Price is a string so it can become an exact BigDecimal. */
     private record P(String name, String description, String price, String brand, int stock, String imageUrl) {}
 
     private void seedCategoryProducts(String categorySlug, List<P> products) {
@@ -232,7 +202,6 @@ public class DataSeeder implements CommandLineRunner {
             productRepository.save(Product.builder()
                     .name(p.name())
                     .description(p.description())
-                    // Constructed from a string, never a double - money must be exact.
                     .price(new BigDecimal(p.price()))
                     .category(category)
                     .brand(p.brand())

@@ -1,38 +1,4 @@
--- =============================================================================
---  E-Commerce Management System - MySQL schema
---
---  Hibernate creates these tables automatically at startup
---  (spring.jpa.hibernate.ddl-auto=update), so you do NOT need to run this file
---  to use the application.
---
---  It is kept as the readable, documented reference for the database design,
---  and for provisioning a schema manually (e.g. on a server where the app
---  should not have DDL rights).
---
---  To run it:
---      mysql -u root -p < database/schema.sql
---
---  Design notes worth reading before the DDL:
---
---   * Money is DECIMAL, never FLOAT/DOUBLE. Binary floating point cannot
---     represent 0.10 exactly, and rounding drift on currency is unacceptable.
---
---   * Orders SNAPSHOT their data. `order_items` copies the product name and
---     price, and `orders` copies the delivery address, at the moment of
---     checkout. If an admin later raises a price, renames a product, or the
---     customer deletes an address, past orders must still show what was
---     actually bought and where it was sent. This is deliberate duplication,
---     not a normalisation mistake.
---
---   * `order_status_history` is append-only. `orders.status` answers "where is
---     my order now"; this table answers "how did it get there and when", which
---     is what real order tracking requires.
---
---   * `products.average_rating` / `review_count` are derived values kept in
---     sync by the application whenever a review changes. They exist so that
---     listing pages can sort and filter by rating without aggregating the whole
---     reviews table on every request.
--- =============================================================================
+
 
 CREATE DATABASE IF NOT EXISTS ecommerce_db
     CHARACTER SET utf8mb4

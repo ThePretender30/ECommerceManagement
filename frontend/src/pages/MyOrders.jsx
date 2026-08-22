@@ -11,7 +11,6 @@ import {
 } from '../utils/format'
 import './Orders.css'
 
-/** The customer's order history. */
 export default function MyOrders() {
   const [result, setResult] = useState(null)
   const [page, setPage] = useState(0)

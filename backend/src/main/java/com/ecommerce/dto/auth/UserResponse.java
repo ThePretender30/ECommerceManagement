@@ -6,13 +6,6 @@ import com.ecommerce.entity.User;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * A safe public view of an account.
- *
- * <p>The password hash is structurally absent - it is not a field that could be
- * accidentally exposed by a serialization setting. Returning DTOs instead of entities is
- * what makes that guarantee possible.
- */
 public record UserResponse(
         Long id,
         String fullName,

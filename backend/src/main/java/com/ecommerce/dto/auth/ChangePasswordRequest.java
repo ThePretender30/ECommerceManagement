@@ -3,9 +3,7 @@ package com.ecommerce.dto.auth;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/** Payload for changing one's own password. The current password is required as proof of identity. */
 public record ChangePasswordRequest(
-
         @NotBlank(message = "Current password is required")
         String currentPassword,
 

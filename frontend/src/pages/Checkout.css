@@ -26,7 +26,6 @@
   }
 }
 
-/* ---- Address picker ------------------------------------------------------- */
 .address-options {
   display: flex;
   flex-direction: column;
@@ -88,7 +87,6 @@
   padding-top: var(--space-2);
 }
 
-/* ---- Order review --------------------------------------------------------- */
 .review-items {
   display: flex;
   flex-direction: column;
