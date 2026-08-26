@@ -13,6 +13,7 @@ public class WhatsAppProperties {
     private String accountSid = "";
     private String authToken = "";
     private String fromNumber = "";
+    private String contentSid = "";
 
     public boolean isFullyConfigured() {
         return enabled

@@ -30,11 +30,20 @@ public class TwilioWhatsAppService implements WhatsAppService {
         String to = normaliseRecipient(toPhoneNumber);
 
         try {
-            Message sent = Message.creator(
-                    new PhoneNumber(to),
-                    new PhoneNumber(properties.normalisedFromNumber()),
-                    message
-            ).create();
+            Message sent;
+            if (properties.getContentSid() != null && !properties.getContentSid().isBlank()) {
+                sent = Message.creator(
+                        new PhoneNumber(to),
+                        new PhoneNumber(properties.normalisedFromNumber()),
+                        message
+                ).setContentSid(properties.getContentSid()).create();
+            } else {
+                sent = Message.creator(
+                        new PhoneNumber(to),
+                        new PhoneNumber(properties.normalisedFromNumber()),
+                        message
+                ).create();
+            }
 
             log.info("WhatsApp message {} sent to {}", sent.getSid(), maskPhone(to));
             return SendResult.sent(sent.getSid());
