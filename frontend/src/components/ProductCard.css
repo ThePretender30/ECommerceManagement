@@ -114,13 +114,11 @@
 .product-grid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-@media (min-width: 640px) {
-  .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
 @media (min-width: 1024px) {
-  .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+  .product-grid {
+    gap: var(--space-5);
+  }
 }

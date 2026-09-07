@@ -55,13 +55,17 @@
 }
 
 .admin-brand-mark {
-  width: 36px;
+  min-width: 38px;
   height: 36px;
+  padding-inline: var(--space-1);
   border-radius: var(--radius);
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: var(--color-text-inverse);
   display: grid;
   place-items: center;
+  font-size: 14px;
   font-weight: var(--weight-bold);
+  line-height: 1;
   flex-shrink: 0;
 }
 

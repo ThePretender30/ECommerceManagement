@@ -30,12 +30,16 @@
 }
 
 .footer-logo-mark {
-  width: 32px;
+  min-width: 34px;
   height: 32px;
+  padding-inline: var(--space-1);
   border-radius: var(--radius);
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   display: grid;
   place-items: center;
+  font-size: 13px;
+  font-weight: var(--weight-bold);
+  line-height: 1;
 }
 
 .footer-tagline,

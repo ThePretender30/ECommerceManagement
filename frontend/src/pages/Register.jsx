@@ -44,7 +44,7 @@ export default function Register() {
         phoneNumber: form.phoneNumber,
         password: form.password,
       })
-      toast.success(`Welcome to ShopSphere, ${user.fullName.split(' ')[0]}!`)
+      toast.success(`Welcome to Roz Bazaar, ${user.fullName.split(' ')[0]}!`)
 
       const redirect = searchParams.get('redirect')
       navigate(redirect ? decodeURIComponent(redirect) : '/', { replace: true })

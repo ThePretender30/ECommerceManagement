@@ -7,7 +7,7 @@
 
 ## What this application is
 
-ShopSphere is an online store. It has two audiences and therefore two faces:
+Roz Bazaar is an online store. It has two audiences and therefore two faces:
 
 - A **storefront** where anyone can browse, and where a signed-in customer can buy things,
   track deliveries and review what they received.

@@ -7,9 +7,22 @@
 
 @media (min-width: 1024px) {
   .listing {
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 260px minmax(0, 1fr);
     gap: var(--space-8);
   }
+
+  .filters {
+    grid-column: 1;
+  }
+
+  .listing-results {
+    grid-column: 2;
+    min-width: 0;
+  }
+}
+
+.listing-results {
+  min-width: 0;
 }
 
 .listing-filter-toggle {

@@ -56,8 +56,8 @@ export default function Navbar() {
         </button>
 
         <Link to="/" className="navbar-brand">
-          <span className="navbar-brand-mark" aria-hidden="true">S</span>
-          <span className="navbar-brand-text">ShopSphere</span>
+          <span className="navbar-brand-mark" aria-hidden="true">रोज़</span>
+          <span className="navbar-brand-text">Roz Bazaar</span>
         </Link>
 
         <form className="navbar-search" onSubmit={handleSearch} role="search">

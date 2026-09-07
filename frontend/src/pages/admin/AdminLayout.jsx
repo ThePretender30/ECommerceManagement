@@ -30,9 +30,9 @@ export default function AdminLayout() {
 
       <aside className={sidebarOpen ? 'admin-sidebar is-open' : 'admin-sidebar'}>
         <div className="admin-brand">
-          <span className="admin-brand-mark" aria-hidden="true">S</span>
+          <span className="admin-brand-mark" aria-hidden="true">रोज़</span>
           <div>
-            <strong>ShopSphere</strong>
+            <strong>Roz Bazaar</strong>
             <span className="admin-brand-sub">Admin</span>
           </div>
         </div>

@@ -16,11 +16,11 @@ export default function Footer() {
       <div className="container footer-inner">
         <div className="footer-brand">
           <div className="footer-logo">
-            <span className="footer-logo-mark" aria-hidden="true">S</span>
-            <span>ShopSphere</span>
+            <span className="footer-logo-mark" aria-hidden="true">रोज़</span>
+            <span>Roz Bazaar</span>
           </div>
           <p className="footer-tagline">
-            Books, groceries, kitchenware, clothing, electronics and furniture — all in one place.
+            Books, groceries, kitchenware, clothing, electronics and furniture — your everyday marketplace.
           </p>
         </div>
 
@@ -52,7 +52,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <div className="container">
-          <p>© {new Date().getFullYear()} ShopSphere. Built as a full-stack learning project.</p>
+          <p>© {new Date().getFullYear()} Roz Bazaar. Built as a full-stack learning project.</p>
         </div>
       </div>
     </footer>
