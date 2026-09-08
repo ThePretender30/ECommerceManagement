@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { AlertTriangleIcon, PackageIcon } from './Icons'
 import './Common.css'
 
 export function Loader({ label = 'Loading…', fullPage = false }) {
@@ -10,10 +11,12 @@ export function Loader({ label = 'Loading…', fullPage = false }) {
   )
 }
 
-export function EmptyState({ icon = '📦', title, message, action }) {
+export function EmptyState({ icon, title, message, action }) {
   return (
     <div className="empty-state">
-      <div className="empty-state-icon" aria-hidden="true">{icon}</div>
+      <div className="empty-state-icon" aria-hidden="true">
+        {icon ?? <PackageIcon size={40} />}
+      </div>
       <h3 className="empty-state-title">{title}</h3>
       {message && <p className="empty-state-message">{message}</p>}
       {action && <div className="empty-state-action">{action}</div>}
@@ -24,7 +27,9 @@ export function EmptyState({ icon = '📦', title, message, action }) {
 export function ErrorState({ message, onRetry }) {
   return (
     <div className="error-state">
-      <div className="error-state-icon" aria-hidden="true">⚠️</div>
+      <div className="error-state-icon" aria-hidden="true">
+        <AlertTriangleIcon size={40} />
+      </div>
       <p className="error-state-message">{message}</p>
       {onRetry && (
         <button type="button" className="btn btn-outline btn-sm mt-4" onClick={onRetry}>

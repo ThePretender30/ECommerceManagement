@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EmptyState, ErrorState, Loader, Pagination } from '../../components/Common'
+import { MessageIcon } from '../../components/Icons'
 import adminService from '../../services/adminService'
 import { formatDateTime } from '../../utils/format'
 
@@ -101,7 +102,7 @@ export default function AdminNotifications() {
 
       {!loading && !error && result?.empty && (
         <EmptyState
-          icon="💬"
+          icon={<MessageIcon size={48} />}
           title="No notifications yet"
           message="Messages are recorded here whenever an order is placed or its status changes."
         />

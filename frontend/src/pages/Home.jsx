@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import { ErrorState, Loader } from '../components/Common'
+import { MessageIcon, ShieldCheckIcon, StarIcon, TruckIcon } from '../components/Icons'
 import productService from '../services/productService'
 import { categoryService } from '../services/catalogService'
 import { handleImageError, FALLBACK_IMAGE } from '../utils/format'
@@ -65,28 +66,28 @@ export default function Home() {
       <section className="container">
         <div className="value-props">
           <div className="value-prop">
-            <span className="value-prop-icon" aria-hidden="true">🚚</span>
+            <span className="value-prop-icon" aria-hidden="true"><TruckIcon size={24} /></span>
             <div>
               <h3>Live order tracking</h3>
               <p>Follow every order from placed to delivered.</p>
             </div>
           </div>
           <div className="value-prop">
-            <span className="value-prop-icon" aria-hidden="true">💬</span>
+            <span className="value-prop-icon" aria-hidden="true"><MessageIcon size={24} /></span>
             <div>
               <h3>WhatsApp updates</h3>
               <p>A message at every stage, straight to your phone.</p>
             </div>
           </div>
           <div className="value-prop">
-            <span className="value-prop-icon" aria-hidden="true">🔒</span>
+            <span className="value-prop-icon" aria-hidden="true"><ShieldCheckIcon size={24} /></span>
             <div>
               <h3>Secure accounts</h3>
               <p>Encrypted passwords and token-based sign-in.</p>
             </div>
           </div>
           <div className="value-prop">
-            <span className="value-prop-icon" aria-hidden="true">⭐</span>
+            <span className="value-prop-icon" aria-hidden="true"><StarIcon size={24} /></span>
             <div>
               <h3>Verified reviews</h3>
               <p>Only customers who received an item can review it.</p>

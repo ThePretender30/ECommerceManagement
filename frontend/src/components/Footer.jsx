@@ -17,7 +17,7 @@ export default function Footer() {
         <div className="footer-brand">
           <div className="footer-logo">
             <span className="footer-logo-mark" aria-hidden="true">रोज़</span>
-            <span>Roz Bazaar</span>
+            <span>Bazaar</span>
           </div>
           <p className="footer-tagline">
             Books, groceries, kitchenware, clothing, electronics and furniture — your everyday marketplace.
@@ -42,17 +42,16 @@ export default function Footer() {
         </nav>
 
         <div className="footer-column">
-          <h4 className="footer-heading">About this project</h4>
+          <h4 className="footer-heading">Customer Care</h4>
           <p className="footer-note">
-            A full-stack demonstration application built with React, Spring Boot and MySQL,
-            with JWT authentication and WhatsApp order notifications.
+            Quality everyday essentials with transparent pricing, instant WhatsApp tracking, and verified customer reviews.
           </p>
         </div>
       </div>
 
       <div className="footer-bottom">
         <div className="container">
-          <p>© {new Date().getFullYear()} Roz Bazaar. Built as a full-stack learning project.</p>
+          <p>© {new Date().getFullYear()} रोज़ Bazaar. All rights reserved.</p>
         </div>
       </div>
     </footer>

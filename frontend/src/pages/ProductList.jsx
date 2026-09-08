@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import ProductCard from '../components/ProductCard'
 import { Breadcrumbs, EmptyState, ErrorState, Loader, Pagination } from '../components/Common'
+import { SearchIcon } from '../components/Icons'
 import productService from '../services/productService'
 import { categoryService } from '../services/catalogService'
 import { useDebounce, useQueryParams } from '../hooks'
@@ -265,7 +266,7 @@ export default function ProductList() {
 
           {!loading && !error && result?.empty && (
             <EmptyState
-              icon="🔍"
+              icon={<SearchIcon size={48} />}
               title="No products match your filters"
               message="Try widening your price range, choosing a different category, or clearing your filters."
               action={

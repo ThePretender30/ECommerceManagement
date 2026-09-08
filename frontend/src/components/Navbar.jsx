@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth, useCart } from '../hooks'
+import { CartIcon, SearchIcon } from './Icons'
 import './Navbar.css'
 
 export default function Navbar() {
@@ -57,7 +58,7 @@ export default function Navbar() {
 
         <Link to="/" className="navbar-brand">
           <span className="navbar-brand-mark" aria-hidden="true">रोज़</span>
-          <span className="navbar-brand-text">Roz Bazaar</span>
+          <span className="navbar-brand-text">Bazaar</span>
         </Link>
 
         <form className="navbar-search" onSubmit={handleSearch} role="search">
@@ -70,7 +71,7 @@ export default function Navbar() {
             aria-label="Search products"
           />
           <button type="submit" className="navbar-search-btn" aria-label="Search">
-            🔍
+            <SearchIcon size={18} />
           </button>
         </form>
 
@@ -133,7 +134,7 @@ export default function Navbar() {
           )}
 
           <Link to="/cart" className="navbar-cart" aria-label={`Cart, ${itemCount} items`}>
-            <span aria-hidden="true">🛒</span>
+            <CartIcon size={20} />
             {itemCount > 0 && <span className="navbar-cart-badge">{itemCount > 99 ? '99+' : itemCount}</span>}
           </Link>
         </div>

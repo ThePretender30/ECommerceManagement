@@ -1,6 +1,6 @@
 
 .hero {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%);
+  background: linear-gradient(135deg, #4d1d12 0%, #7c2d12 50%, #a2432b 100%);
   color: var(--color-text-inverse);
   position: relative;
   overflow: hidden;
@@ -225,8 +225,8 @@
   margin-top: var(--space-12);
   padding: var(--space-8);
   border-radius: var(--radius-lg);
-  background: linear-gradient(120deg, var(--color-accent-light), #fde68a);
-  border: 1px solid #fcd34d;
+  background: linear-gradient(120deg, #fdf4eb, #faecd9);
+  border: 1px solid #ebd7bf;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -236,12 +236,12 @@
 
 .promo-title {
   font-size: var(--text-xl);
-  color: #78350f;
+  color: #7c2d12;
   margin-bottom: var(--space-1);
 }
 
 .promo-text {
   font-size: var(--text-sm);
-  color: #92400e;
+  color: #8c4227;
   max-width: 52ch;
 }

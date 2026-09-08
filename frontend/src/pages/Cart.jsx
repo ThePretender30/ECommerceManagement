@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { EmptyState, Loader, QuantityStepper } from '../components/Common'
+import { CartIcon } from '../components/Icons'
 import { ConfirmDialog } from '../components/Modal'
 import { useCart, useToast } from '../hooks'
 import { formatCurrency, handleImageError, FALLBACK_IMAGE } from '../utils/format'
@@ -55,7 +56,7 @@ export default function Cart() {
     return (
       <div className="page container">
         <EmptyState
-          icon="🛒"
+          icon={<CartIcon size={48} />}
           title="Your cart is empty"
           message="Browse the store and add something you like — your cart is saved to your account."
           action={<Link to="/products" className="btn btn-primary btn-lg">Start shopping</Link>}

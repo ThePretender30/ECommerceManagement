@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { CartIcon, MapPinIcon, PackageIcon } from '../components/Icons'
 import authService from '../services/authService'
 import { useAuth, useToast } from '../hooks'
 import { formatDate } from '../utils/format'
@@ -93,9 +94,15 @@ export default function Profile() {
           </div>
 
           <nav className="profile-links">
-            <Link to="/orders" className="profile-link">📦 My Orders</Link>
-            <Link to="/addresses" className="profile-link">📍 Delivery Addresses</Link>
-            <Link to="/cart" className="profile-link">🛒 Shopping Cart</Link>
+            <Link to="/orders" className="profile-link">
+              <PackageIcon size={18} /> My Orders
+            </Link>
+            <Link to="/addresses" className="profile-link">
+              <MapPinIcon size={18} /> Delivery Addresses
+            </Link>
+            <Link to="/cart" className="profile-link">
+              <CartIcon size={18} /> Shopping Cart
+            </Link>
           </nav>
         </aside>
 

@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { BarChartIcon, FolderIcon, MessageIcon, PackageIcon, ReceiptIcon, UsersIcon } from '../../components/Icons'
 import { useAuth } from '../../hooks'
 import './Admin.css'
 
 const NAV_ITEMS = [
-  { to: '/admin', label: 'Dashboard', icon: '📊', end: true },
-  { to: '/admin/products', label: 'Products', icon: '📦' },
-  { to: '/admin/categories', label: 'Categories', icon: '🗂️' },
-  { to: '/admin/orders', label: 'Orders', icon: '🧾' },
-  { to: '/admin/users', label: 'Users', icon: '👥' },
-  { to: '/admin/notifications', label: 'Notifications', icon: '💬' },
+  { to: '/admin', label: 'Dashboard', icon: <BarChartIcon size={18} />, end: true },
+  { to: '/admin/products', label: 'Products', icon: <PackageIcon size={18} /> },
+  { to: '/admin/categories', label: 'Categories', icon: <FolderIcon size={18} /> },
+  { to: '/admin/orders', label: 'Orders', icon: <ReceiptIcon size={18} /> },
+  { to: '/admin/users', label: 'Users', icon: <UsersIcon size={18} /> },
+  { to: '/admin/notifications', label: 'Notifications', icon: <MessageIcon size={18} /> },
 ]
 
 export default function AdminLayout() {
@@ -32,7 +33,7 @@ export default function AdminLayout() {
         <div className="admin-brand">
           <span className="admin-brand-mark" aria-hidden="true">रोज़</span>
           <div>
-            <strong>Roz Bazaar</strong>
+            <strong>Bazaar</strong>
             <span className="admin-brand-sub">Admin</span>
           </div>
         </div>

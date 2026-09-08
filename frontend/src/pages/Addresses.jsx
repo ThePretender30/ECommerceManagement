@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { EmptyState, ErrorState, Loader } from '../components/Common'
+import { MapPinIcon } from '../components/Icons'
 import Modal, { ConfirmDialog } from '../components/Modal'
 import { addressService } from '../services/catalogService'
 import { useToast } from '../hooks'
@@ -135,7 +136,7 @@ export default function Addresses() {
 
       {addresses.length === 0 ? (
         <EmptyState
-          icon="📍"
+          icon={<MapPinIcon size={48} />}
           title="No saved addresses yet"
           message="Save an address to make checkout faster next time."
           action={

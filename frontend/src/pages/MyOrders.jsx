@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EmptyState, ErrorState, Loader, Pagination } from '../components/Common'
+import { PackageIcon } from '../components/Icons'
 import orderService from '../services/orderService'
 import {
   formatCurrency,
@@ -36,7 +37,7 @@ export default function MyOrders() {
     return (
       <div className="page container">
         <EmptyState
-          icon="📦"
+          icon={<PackageIcon size={48} />}
           title="You have not placed any orders yet"
           message="Once you place an order it will appear here, and you can track it at every step."
           action={<Link to="/products" className="btn btn-primary btn-lg">Browse products</Link>}

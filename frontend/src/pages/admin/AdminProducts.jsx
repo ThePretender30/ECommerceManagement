@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EmptyState, ErrorState, Loader, Pagination } from '../../components/Common'
+import { PackageIcon } from '../../components/Icons'
 import { ConfirmDialog } from '../../components/Modal'
 import adminService from '../../services/adminService'
 import { useDebounce, useToast } from '../../hooks'
@@ -113,7 +114,7 @@ export default function AdminProducts() {
 
       {!loading && !error && result?.empty && (
         <EmptyState
-          icon="📦"
+          icon={<PackageIcon size={48} />}
           title="No products found"
           message="Try a different search, or add your first product."
           action={<Link to="/admin/products/new" className="btn btn-primary">Add product</Link>}
