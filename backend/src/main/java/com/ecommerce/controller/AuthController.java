@@ -15,7 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Registration, login, OTP verification, and the signed-in user's own profile.
+ * Registration (with email OTP verification), login, and the signed-in user's profile.
  *
  * <p>Controllers in this project stay thin: validate the request shape, hand the work to a
  * service, and map the result to a response. There is no database access here.
@@ -27,40 +27,40 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Register, sign in, verify OTP, and manage your account")
+@Tag(name = "Authentication", description = "Register with email OTP, sign in, and manage your account")
 public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
 
     @PostMapping("/register")
-    @Operation(summary = "Create a customer account and return a JWT")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+    @Operation(summary = "Initiate customer registration and dispatch an email OTP")
+    public ResponseEntity<LoginChallengeResponse> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.initiateRegistration(request));
+    }
+
+    @PostMapping("/register/verify")
+    @Operation(summary = "Verify the registration email OTP, create the account, and return the JWT session")
+    public ResponseEntity<AuthResponse> verifyRegistration(@Valid @RequestBody VerifyOtpRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.verifyRegistration(request));
+    }
+
+    @PostMapping("/register/resend")
+    @Operation(summary = "Resend a new 6-digit OTP code to the pending registration email")
+    public ResponseEntity<LoginChallengeResponse> resendRegistrationOtp(@Valid @RequestBody ResendOtpRequest request) {
+        return ResponseEntity.ok(authService.resendRegistrationOtp(request));
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Initiate customer sign in and dispatch an email OTP")
-    public ResponseEntity<LoginChallengeResponse> login(@Valid @RequestBody LoginRequest request) {
+    @Operation(summary = "Customer sign in and return JWT session")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/admin/login")
-    @Operation(summary = "Initiate admin portal sign in and dispatch an email OTP")
-    public ResponseEntity<LoginChallengeResponse> loginAdmin(@Valid @RequestBody LoginRequest request) {
+    @Operation(summary = "Admin portal sign in (enforces ROLE_ADMIN) and return JWT session")
+    public ResponseEntity<AuthResponse> loginAdmin(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.loginAdmin(request));
-    }
-
-    @PostMapping("/verify-otp")
-    @Operation(summary = "Verify the email OTP and return the JWT session")
-    public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
-        return ResponseEntity.ok(authService.verifyLoginOtp(request));
-    }
-
-    @PostMapping("/resend-otp")
-    @Operation(summary = "Resend a new 6-digit OTP code to the user's email")
-    public ResponseEntity<LoginChallengeResponse> resendOtp(@Valid @RequestBody ResendOtpRequest request) {
-        return ResponseEntity.ok(authService.resendLoginOtp(request));
     }
 
     @GetMapping("/me")

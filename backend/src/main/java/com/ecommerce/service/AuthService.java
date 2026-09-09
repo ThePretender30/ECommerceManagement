@@ -32,13 +32,29 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final LoginChallengeService loginChallengeService;
+    private final RegistrationChallengeService registrationChallengeService;
 
-    @Transactional
-    public AuthResponse register(RegisterRequest request) {
+    @Transactional(readOnly = true)
+    public LoginChallengeResponse initiateRegistration(RegisterRequest request) {
         String email = request.email().trim().toLowerCase();
 
         if (userRepository.existsByEmail(email)) {
+            throw new DuplicateResourceException(
+                    "An account with this email already exists. Try signing in instead.");
+        }
+
+        String passwordHash = passwordEncoder.encode(request.password());
+        log.info("Initiating registration challenge for email: {}", email);
+
+        return registrationChallengeService.createChallenge(request, passwordHash);
+    }
+
+    @Transactional
+    public AuthResponse verifyRegistration(VerifyOtpRequest request) {
+        RegistrationChallengeService.RegistrationChallenge challenge =
+                registrationChallengeService.verifyAndConsume(request.sessionToken(), request.otp().trim());
+
+        if (userRepository.existsByEmail(challenge.email())) {
             throw new DuplicateResourceException(
                     "An account with this email already exists. Try signing in instead.");
         }
@@ -48,22 +64,26 @@ public class AuthService {
                         "ROLE_CUSTOMER is missing. The database was not seeded correctly."));
 
         User user = User.builder()
-                .fullName(request.fullName().trim())
-                .email(email)
-                .password(passwordEncoder.encode(request.password()))
-                .phoneNumber(request.phoneNumber().trim())
+                .fullName(challenge.fullName())
+                .email(challenge.email())
+                .password(challenge.passwordHash())
+                .phoneNumber(challenge.phoneNumber())
                 .enabled(true)
                 .roles(Set.of(customerRole))
                 .build();
 
         User saved = userRepository.save(user);
-        log.info("Registered new customer account: {}", saved.getEmail());
+        log.info("Successfully registered and verified new customer account: {}", saved.getEmail());
 
         return buildAuthResponse(saved);
     }
 
+    public LoginChallengeResponse resendRegistrationOtp(ResendOtpRequest request) {
+        return registrationChallengeService.resendOtp(request.sessionToken());
+    }
+
     @Transactional(readOnly = true)
-    public LoginChallengeResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) {
         String email = request.email().trim().toLowerCase();
 
         Authentication authentication = authenticationManager.authenticate(
@@ -74,12 +94,12 @@ public class AuthService {
         User user = userRepository.findByEmail(principal.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User", principal.getEmail()));
 
-        log.info("Credentials verified for customer login: {}", user.getEmail());
-        return loginChallengeService.createChallenge(user, false);
+        log.info("Successful customer login: {}", user.getEmail());
+        return buildAuthResponse(user);
     }
 
     @Transactional(readOnly = true)
-    public LoginChallengeResponse loginAdmin(LoginRequest request) {
+    public AuthResponse loginAdmin(LoginRequest request) {
         String email = request.email().trim().toLowerCase();
 
         Authentication authentication = authenticationManager.authenticate(
@@ -95,28 +115,8 @@ public class AuthService {
             throw new AccessDeniedException("Access denied: This account does not have administrator privileges.");
         }
 
-        log.info("Credentials verified for admin login: {}", user.getEmail());
-        return loginChallengeService.createChallenge(user, true);
-    }
-
-    @Transactional(readOnly = true)
-    public AuthResponse verifyLoginOtp(VerifyOtpRequest request) {
-        LoginChallengeService.Challenge challenge = loginChallengeService.verifyAndConsume(
-                request.sessionToken(), request.otp().trim());
-
-        User user = userRepository.findById(challenge.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", challenge.userId()));
-
-        if (challenge.adminRequired() && !user.hasRole(RoleName.ROLE_ADMIN)) {
-            throw new AccessDeniedException("Access denied: This account does not have administrator privileges.");
-        }
-
-        log.info("Successful OTP login for user: {}", user.getEmail());
+        log.info("Successful administrator login: {}", user.getEmail());
         return buildAuthResponse(user);
-    }
-
-    public LoginChallengeResponse resendLoginOtp(ResendOtpRequest request) {
-        return loginChallengeService.resendOtp(request.sessionToken());
     }
 
     @Transactional(readOnly = true)

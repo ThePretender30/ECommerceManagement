@@ -55,29 +55,29 @@ export function AuthProvider({ children }) {
     return authResponse.user
   }, [])
 
-  const initiateLogin = useCallback(
-    async (email, password) => authService.login(email, password),
-    []
-  )
-
-  const initiateAdminLogin = useCallback(
-    async (email, password) => authService.loginAdmin(email, password),
-    []
-  )
-
-  const verifyOtp = useCallback(
-    async (sessionToken, otp) => applySession(await authService.verifyOtp(sessionToken, otp)),
+  const login = useCallback(
+    async (email, password) => applySession(await authService.login(email, password)),
     [applySession]
   )
 
-  const resendOtp = useCallback(
-    async (sessionToken) => authService.resendOtp(sessionToken),
+  const loginAdmin = useCallback(
+    async (email, password) => applySession(await authService.loginAdmin(email, password)),
+    [applySession]
+  )
+
+  const initiateRegister = useCallback(
+    async (payload) => authService.initiateRegister(payload),
     []
   )
 
-  const register = useCallback(
-    async (payload) => applySession(await authService.register(payload)),
+  const verifyRegisterOtp = useCallback(
+    async (sessionToken, otp) => applySession(await authService.verifyRegisterOtp(sessionToken, otp)),
     [applySession]
+  )
+
+  const resendRegisterOtp = useCallback(
+    async (sessionToken) => authService.resendRegisterOtp(sessionToken),
+    []
   )
 
   const logout = useCallback(async () => {
@@ -99,15 +99,15 @@ export function AuthProvider({ children }) {
       loading,
       isAuthenticated: Boolean(user),
       isAdmin: Boolean(user?.roles?.includes('ROLE_ADMIN')),
-      initiateLogin,
-      initiateAdminLogin,
-      verifyOtp,
-      resendOtp,
-      register,
+      login,
+      loginAdmin,
+      initiateRegister,
+      verifyRegisterOtp,
+      resendRegisterOtp,
       logout,
       updateUser,
     }),
-    [user, loading, initiateLogin, initiateAdminLogin, verifyOtp, resendOtp, register, logout, updateUser]
+    [user, loading, login, loginAdmin, initiateRegister, verifyRegisterOtp, resendRegisterOtp, logout, updateUser]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

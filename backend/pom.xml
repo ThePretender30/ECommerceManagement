@@ -54,6 +54,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Spring Mail for sending real verification emails via SMTP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- MySQL driver. Version is managed by the Spring Boot parent BOM. -->
         <dependency>
             <groupId>com.mysql</groupId>

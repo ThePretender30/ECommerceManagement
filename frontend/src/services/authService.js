@@ -1,19 +1,19 @@
 import api from './api'
 
 export const authService = {
-  register: (payload) => api.post('/auth/register', payload).then((r) => r.data),
+  initiateRegister: (payload) => api.post('/auth/register', payload).then((r) => r.data),
+
+  verifyRegisterOtp: (sessionToken, otp) =>
+    api.post('/auth/register/verify', { sessionToken, otp }).then((r) => r.data),
+
+  resendRegisterOtp: (sessionToken) =>
+    api.post('/auth/register/resend', { sessionToken }).then((r) => r.data),
 
   login: (email, password) =>
     api.post('/auth/login', { email, password }).then((r) => r.data),
 
   loginAdmin: (email, password) =>
     api.post('/auth/admin/login', { email, password }).then((r) => r.data),
-
-  verifyOtp: (sessionToken, otp) =>
-    api.post('/auth/verify-otp', { sessionToken, otp }).then((r) => r.data),
-
-  resendOtp: (sessionToken) =>
-    api.post('/auth/resend-otp', { sessionToken }).then((r) => r.data),
 
   me: () => api.get('/auth/me').then((r) => r.data),
 

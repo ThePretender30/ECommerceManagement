@@ -56,10 +56,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(
                             "/api/auth/register",
+                            "/api/auth/register/verify",
+                            "/api/auth/register/resend",
                             "/api/auth/login",
-                            "/api/auth/admin/login",
-                            "/api/auth/verify-otp",
-                            "/api/auth/resend-otp"
+                            "/api/auth/admin/login"
                     ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()

@@ -1,8 +1,8 @@
 package com.ecommerce.service;
 
 import com.ecommerce.dto.auth.LoginChallengeResponse;
+import com.ecommerce.dto.auth.RegisterRequest;
 import com.ecommerce.email.EmailService;
-import com.ecommerce.entity.User;
 import com.ecommerce.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class LoginChallengeService {
+public class RegistrationChallengeService {
 
     private static final Duration OTP_EXPIRY = Duration.ofMinutes(5);
     private static final int MAX_ATTEMPTS = 5;
@@ -28,18 +28,19 @@ public class LoginChallengeService {
     private final EmailService emailService;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    private final Map<String, Challenge> challenges = new ConcurrentHashMap<>();
+    private final Map<String, RegistrationChallenge> challenges = new ConcurrentHashMap<>();
 
-    public record Challenge(
-            Long userId,
+    public record RegistrationChallenge(
+            String fullName,
             String email,
+            String passwordHash,
+            String phoneNumber,
             String otpHash,
             Instant expiresAt,
-            int attemptsRemaining,
-            boolean adminRequired
+            int attemptsRemaining
     ) {}
 
-    public LoginChallengeResponse createChallenge(User user, boolean adminRequired) {
+    public LoginChallengeResponse createChallenge(RegisterRequest request, String passwordHash) {
         cleanExpiredChallenges();
 
         String sessionToken = UUID.randomUUID().toString();
@@ -47,67 +48,77 @@ public class LoginChallengeService {
         String otpHash = passwordEncoder.encode(plainOtp);
 
         Instant expiresAt = Instant.now().plus(OTP_EXPIRY);
-        challenges.put(sessionToken, new Challenge(user.getId(), user.getEmail(), otpHash, expiresAt, MAX_ATTEMPTS, adminRequired));
+        challenges.put(sessionToken, new RegistrationChallenge(
+                request.fullName().trim(),
+                request.email().trim().toLowerCase(),
+                passwordHash,
+                request.phoneNumber().trim(),
+                otpHash,
+                expiresAt,
+                MAX_ATTEMPTS
+        ));
 
-        sendOtpEmail(user.getEmail(), user.getFullName(), plainOtp);
+        sendOtpEmail(request.email().trim().toLowerCase(), request.fullName().trim(), plainOtp);
 
-        return LoginChallengeResponse.of(sessionToken, maskEmail(user.getEmail()), OTP_EXPIRY.toSeconds());
+        return LoginChallengeResponse.of(sessionToken, maskEmail(request.email().trim()), OTP_EXPIRY.toSeconds());
     }
 
     public LoginChallengeResponse resendOtp(String sessionToken) {
         cleanExpiredChallenges();
 
-        Challenge existing = challenges.get(sessionToken);
+        RegistrationChallenge existing = challenges.get(sessionToken);
         if (existing == null || Instant.now().isAfter(existing.expiresAt())) {
             challenges.remove(sessionToken);
-            throw new BadRequestException("The verification session has expired. Please sign in again.");
+            throw new BadRequestException("The verification session has expired. Please sign up again.");
         }
 
         String plainOtp = String.format("%06d", secureRandom.nextInt(1_000_000));
         String otpHash = passwordEncoder.encode(plainOtp);
         Instant expiresAt = Instant.now().plus(OTP_EXPIRY);
 
-        challenges.put(sessionToken, new Challenge(
-                existing.userId(),
+        challenges.put(sessionToken, new RegistrationChallenge(
+                existing.fullName(),
                 existing.email(),
+                existing.passwordHash(),
+                existing.phoneNumber(),
                 otpHash,
                 expiresAt,
-                MAX_ATTEMPTS,
-                existing.adminRequired()
+                MAX_ATTEMPTS
         ));
 
-        sendOtpEmail(existing.email(), "User", plainOtp);
+        sendOtpEmail(existing.email(), existing.fullName(), plainOtp);
 
         return LoginChallengeResponse.of(sessionToken, maskEmail(existing.email()), OTP_EXPIRY.toSeconds());
     }
 
-    public Challenge verifyAndConsume(String sessionToken, String rawOtp) {
+    public RegistrationChallenge verifyAndConsume(String sessionToken, String rawOtp) {
         cleanExpiredChallenges();
 
-        Challenge challenge = challenges.get(sessionToken);
+        RegistrationChallenge challenge = challenges.get(sessionToken);
         if (challenge == null || Instant.now().isAfter(challenge.expiresAt())) {
             challenges.remove(sessionToken);
-            throw new BadRequestException("Verification code has expired or is invalid. Please sign in again.");
+            throw new BadRequestException("Verification code has expired or is invalid. Please sign up again.");
         }
 
         if (challenge.attemptsRemaining() <= 0) {
             challenges.remove(sessionToken);
-            throw new BadRequestException("Too many invalid attempts. Please sign in again.");
+            throw new BadRequestException("Too many invalid attempts. Please sign up again.");
         }
 
         if (!passwordEncoder.matches(rawOtp, challenge.otpHash())) {
             int remaining = challenge.attemptsRemaining() - 1;
             if (remaining <= 0) {
                 challenges.remove(sessionToken);
-                throw new BadRequestException("Invalid verification code. Maximum attempts exceeded, please sign in again.");
+                throw new BadRequestException("Invalid verification code. Maximum attempts exceeded, please sign up again.");
             }
-            challenges.put(sessionToken, new Challenge(
-                    challenge.userId(),
+            challenges.put(sessionToken, new RegistrationChallenge(
+                    challenge.fullName(),
                     challenge.email(),
+                    challenge.passwordHash(),
+                    challenge.phoneNumber(),
                     challenge.otpHash(),
                     challenge.expiresAt(),
-                    remaining,
-                    challenge.adminRequired()
+                    remaining
             ));
             throw new BadRequestException("Invalid verification code. You have " + remaining + " attempts remaining.");
         }
@@ -117,16 +128,17 @@ public class LoginChallengeService {
     }
 
     private void sendOtpEmail(String email, String fullName, String otp) {
-        String subject = "Your Roz Bazaar Sign-In Verification Code: " + otp;
+        String subject = "Verify your email for Roz Bazaar: " + otp;
         String body = String.format("""
                 Hello %s,
 
-                Your 6-digit verification code to sign in to Roz Bazaar is:
+                Thank you for creating an account with Roz Bazaar.
+                Your 6-digit email verification code is:
 
                   %s
 
                 This code is valid for 5 minutes.
-                If you did not attempt to sign in, please secure your account immediately.
+                If you did not request this account, you can ignore this email.
 
                 Regards,
                 Roz Bazaar Team
