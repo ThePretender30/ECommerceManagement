@@ -6,6 +6,7 @@ import { AdminRoute, GuestRoute, ProtectedRoute } from './components/RouteGuards
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import AdminLogin from './pages/admin/AdminLogin'
 import Categories from './pages/Categories'
 import ProductList from './pages/ProductList'
 import ProductDetail from './pages/ProductDetail'
@@ -46,6 +47,7 @@ export default function App() {
 
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+          <Route path="/admin/login" element={<GuestRoute><AdminLogin /></GuestRoute>} />
 
           <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />

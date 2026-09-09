@@ -24,10 +24,10 @@ export function AdminRoute({ children }) {
 
   if (!isAuthenticated) {
     const redirect = encodeURIComponent(location.pathname + location.search)
-    return <Navigate to={`/login?redirect=${redirect}`} replace />
+    return <Navigate to={`/admin/login?redirect=${redirect}`} replace />
   }
 
-  if (!isAdmin) return <Navigate to="/" replace />
+  if (!isAdmin) return <Navigate to="/admin/login" replace />
 
   return children
 }

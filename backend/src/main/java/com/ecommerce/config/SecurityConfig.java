@@ -54,7 +54,13 @@ public class SecurityConfig {
                     .authenticationEntryPoint(jwtAuthEntryPoint)
                     .accessDeniedHandler(accessDeniedHandler))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                    .requestMatchers(
+                            "/api/auth/register",
+                            "/api/auth/login",
+                            "/api/auth/admin/login",
+                            "/api/auth/verify-otp",
+                            "/api/auth/resend-otp"
+                    ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                     .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()

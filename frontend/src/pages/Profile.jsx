@@ -28,6 +28,12 @@ export default function Profile() {
   const handleProfileSubmit = async (event) => {
     event.preventDefault()
     setProfileErrors({})
+    const nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/
+    if (!nameRegex.test(profile.fullName.trim())) {
+      setProfileErrors({ fullName: 'Full name can only contain letters and spaces (no dots, digits, or symbols).' })
+      return
+    }
+
     setSavingProfile(true)
 
     try {

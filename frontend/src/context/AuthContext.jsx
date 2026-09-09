@@ -55,9 +55,24 @@ export function AuthProvider({ children }) {
     return authResponse.user
   }, [])
 
-  const login = useCallback(
-    async (email, password) => applySession(await authService.login(email, password)),
+  const initiateLogin = useCallback(
+    async (email, password) => authService.login(email, password),
+    []
+  )
+
+  const initiateAdminLogin = useCallback(
+    async (email, password) => authService.loginAdmin(email, password),
+    []
+  )
+
+  const verifyOtp = useCallback(
+    async (sessionToken, otp) => applySession(await authService.verifyOtp(sessionToken, otp)),
     [applySession]
+  )
+
+  const resendOtp = useCallback(
+    async (sessionToken) => authService.resendOtp(sessionToken),
+    []
   )
 
   const register = useCallback(
@@ -84,12 +99,15 @@ export function AuthProvider({ children }) {
       loading,
       isAuthenticated: Boolean(user),
       isAdmin: Boolean(user?.roles?.includes('ROLE_ADMIN')),
-      login,
+      initiateLogin,
+      initiateAdminLogin,
+      verifyOtp,
+      resendOtp,
       register,
       logout,
       updateUser,
     }),
-    [user, loading, login, register, logout, updateUser]
+    [user, loading, initiateLogin, initiateAdminLogin, verifyOtp, resendOtp, register, logout, updateUser]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

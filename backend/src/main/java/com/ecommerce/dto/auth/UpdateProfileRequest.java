@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Size;
 public record UpdateProfileRequest(
         @NotBlank(message = "Full name is required")
         @Size(min = 2, max = 120, message = "Full name must be between 2 and 120 characters")
+        @Pattern(regexp = "^[a-zA-Z]+(?: [a-zA-Z]+)*$",
+                 message = "Full name can only contain letters and spaces (no dots, digits, or symbols)")
         String fullName,
 
         @NotBlank(message = "Phone number is required")

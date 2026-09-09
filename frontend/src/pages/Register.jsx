@@ -31,6 +31,12 @@ export default function Register() {
     setError(null)
     setFieldErrors({})
 
+    const nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/
+    if (!nameRegex.test(form.fullName.trim())) {
+      setFieldErrors({ fullName: 'Full name can only contain letters and spaces (no dots, digits, or symbols).' })
+      return
+    }
+
     if (form.password !== form.confirmPassword) {
       setFieldErrors({ confirmPassword: 'Passwords do not match.' })
       return

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth, useToast } from '../hooks'
-import './Auth.css'
+import { useAuth, useToast } from '../../hooks'
+import { ShieldCheckIcon } from '../../components/Icons'
+import '../Auth.css'
 
-export default function Login() {
-  const { initiateLogin, verifyOtp, resendOtp } = useAuth()
+export default function AdminLogin() {
+  const { initiateAdminLogin, verifyOtp, resendOtp } = useAuth()
   const toast = useToast()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -38,11 +39,11 @@ export default function Login() {
     setSubmitting(true)
 
     try {
-      const challengeResponse = await initiateLogin(form.email, form.password)
+      const challengeResponse = await initiateAdminLogin(form.email, form.password)
       setChallenge(challengeResponse)
       setStep('otp')
       setCountdown(60)
-      toast.info('Verification code sent to your email.')
+      toast.info('Admin verification code sent to your email.')
     } catch (err) {
       setError(err.message)
       if (err.fieldErrors) setFieldErrors(err.fieldErrors)
@@ -64,14 +65,10 @@ export default function Login() {
 
     try {
       const user = await verifyOtp(challenge.sessionToken, otp.trim())
-      toast.success(`Welcome back, ${user.fullName.split(' ')[0]}!`)
+      toast.success(`Welcome to Admin Panel, ${user.fullName.split(' ')[0]}!`)
 
       const redirect = searchParams.get('redirect')
-      if (redirect) {
-        navigate(decodeURIComponent(redirect), { replace: true })
-      } else {
-        navigate(user.roles?.includes('ROLE_ADMIN') ? '/admin' : '/', { replace: true })
-      }
+      navigate(redirect ? decodeURIComponent(redirect) : '/admin', { replace: true })
     } catch (err) {
       setError(err.message)
       if (err.fieldErrors) setFieldErrors(err.fieldErrors)
@@ -99,15 +96,18 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
+    <div className="auth-page auth-page-admin">
+      <div className="auth-card auth-card-admin">
         <div className="auth-header">
+          <div className="auth-badge">
+            <ShieldCheckIcon size={14} /> Admin Portal
+          </div>
           <h1 className="auth-title">
-            {step === 'credentials' ? 'Customer Sign In' : 'Email Verification'}
+            {step === 'credentials' ? 'Administrator Sign In' : 'Email Verification'}
           </h1>
           <p className="auth-subtitle">
             {step === 'credentials'
-              ? 'Sign in to your Roz Bazaar customer account.'
+              ? 'Authorized store management personnel only.'
               : `Enter the 6-digit code sent to ${challenge?.maskedEmail || 'your email'}.`}
           </p>
         </div>
@@ -117,15 +117,15 @@ export default function Login() {
         {step === 'credentials' ? (
           <form onSubmit={handleCredentialsSubmit} noValidate>
             <div className="form-group">
-              <label className="form-label" htmlFor="email">Email address</label>
+              <label className="form-label" htmlFor="adminEmail">Admin Email</label>
               <input
-                id="email"
+                id="adminEmail"
                 name="email"
                 type="email"
                 className={fieldErrors.email ? 'form-control has-error' : 'form-control'}
                 value={form.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
+                placeholder="admin@ecommerce.local"
                 autoComplete="email"
                 required
               />
@@ -133,15 +133,15 @@ export default function Login() {
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
+              <label className="form-label" htmlFor="adminPassword">Admin Password</label>
               <input
-                id="password"
+                id="adminPassword"
                 name="password"
                 type="password"
                 className={fieldErrors.password ? 'form-control has-error' : 'form-control'}
                 value={form.password}
                 onChange={handleChange}
-                placeholder="Your password"
+                placeholder="Your administrator password"
                 autoComplete="current-password"
                 required
               />
@@ -149,15 +149,15 @@ export default function Login() {
             </div>
 
             <button type="submit" className="btn btn-primary btn-block btn-lg mt-4" disabled={submitting}>
-              {submitting ? 'Verifying credentials…' : 'Continue'}
+              {submitting ? 'Verifying admin credentials…' : 'Continue to Verification'}
             </button>
           </form>
         ) : (
           <form onSubmit={handleOtpSubmit} noValidate>
             <div className="form-group otp-box-wrapper">
-              <label className="form-label" htmlFor="otp">6-Digit Verification Code</label>
+              <label className="form-label" htmlFor="adminOtp">6-Digit Admin Verification Code</label>
               <input
-                id="otp"
+                id="adminOtp"
                 name="otp"
                 type="text"
                 maxLength={6}
@@ -201,17 +201,17 @@ export default function Login() {
             </div>
 
             <button type="submit" className="btn btn-primary btn-block btn-lg mt-4" disabled={submitting}>
-              {submitting ? 'Verifying code…' : 'Verify & Sign in'}
+              {submitting ? 'Verifying code…' : 'Verify & Enter Admin Panel'}
             </button>
           </form>
         )}
 
         <div className="auth-portal-switch">
-          Are you a store administrator? <Link to="/admin/login">Admin Sign In →</Link>
+          Customer looking to shop? <Link to="/login">Customer Sign In →</Link>
         </div>
 
         <p className="auth-footer">
-          Don&apos;t have an account? <Link to="/register">Create one</Link>
+          <Link to="/">← Return to Storefront</Link>
         </p>
       </div>
     </div>

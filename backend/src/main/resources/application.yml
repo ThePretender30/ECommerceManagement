@@ -76,6 +76,15 @@ app:
     # Twilio sandbox number, e.g. whatsapp:+14155238886
     from-number: ${TWILIO_WHATSAPP_FROM:whatsapp:+14155238886}
 
+  mail:
+    enabled: ${MAIL_ENABLED:true}
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    from: ${MAIL_FROM:no-reply@rozbazaar.local}
+    from-name: ${MAIL_FROM_NAME:Roz Bazaar}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
