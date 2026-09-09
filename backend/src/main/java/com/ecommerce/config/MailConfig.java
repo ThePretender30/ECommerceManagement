@@ -44,13 +44,25 @@ public class MailConfig {
         props.put("mail.smtp.auth", String.valueOf(mailProperties.getUsername() != null && !mailProperties.getUsername().isBlank()));
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.starttls.required", "true");
-        props.put("mail.smtp.connectiontimeout", "5000");
-        props.put("mail.smtp.timeout", "5000");
-        props.put("mail.smtp.writetimeout", "5000");
+        props.put("mail.smtp.ssl.trust", "*");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
+        props.put("mail.smtp.connectiontimeout", "10000");
+        props.put("mail.smtp.timeout", "10000");
+        props.put("mail.smtp.writetimeout", "10000");
 
-        log.info("Initialized SMTP email sender (host={}, port={}, user={})",
-                mailProperties.getHost(), mailProperties.getPort(), mailProperties.getUsername());
+        String fromEmail = (mailProperties.getFrom() != null && !mailProperties.getFrom().isBlank() && !mailProperties.getFrom().contains("no-reply@rozbazaar.local"))
+                ? mailProperties.getFrom().trim()
+                : (mailProperties.getUsername() != null && !mailProperties.getUsername().isBlank())
+                        ? mailProperties.getUsername().trim()
+                        : "no-reply@rozbazaar.local";
 
-        return new SmtpEmailService(sender, mailProperties.getFrom(), mailProperties.getFromName());
+        String fromName = (mailProperties.getFromName() != null && !mailProperties.getFromName().isBlank())
+                ? mailProperties.getFromName().trim()
+                : "Roz Bazaar";
+
+        log.info("Initialized SMTP email sender (host={}, port={}, user={}, from={})",
+                mailProperties.getHost(), mailProperties.getPort(), mailProperties.getUsername(), fromEmail);
+
+        return new SmtpEmailService(sender, fromEmail, fromName);
     }
 }

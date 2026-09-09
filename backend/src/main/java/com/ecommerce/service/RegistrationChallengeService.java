@@ -3,6 +3,7 @@ package com.ecommerce.service;
 import com.ecommerce.dto.auth.LoginChallengeResponse;
 import com.ecommerce.dto.auth.RegisterRequest;
 import com.ecommerce.email.EmailService;
+import com.ecommerce.email.SendResult;
 import com.ecommerce.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -144,7 +145,16 @@ public class RegistrationChallengeService {
                 Roz Bazaar Team
                 """, fullName, otp);
 
-        emailService.send(email, subject, body);
+        SendResult result = emailService.send(email, subject, body);
+        if ("FAILED".equals(result.status())) {
+            log.warn("""
+
+                    ------------------------------------------------------------
+                    Failed to dispatch email via {} to {}: {}
+                    FALLBACK OTP CODE: {}
+                    ------------------------------------------------------------
+                    """, emailService.providerName(), email, result.errorMessage(), otp);
+        }
     }
 
     private String maskEmail(String email) {
