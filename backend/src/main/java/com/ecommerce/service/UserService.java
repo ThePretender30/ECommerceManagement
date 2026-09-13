@@ -2,11 +2,13 @@ package com.ecommerce.service;
 
 import com.ecommerce.dto.auth.UserResponse;
 import com.ecommerce.dto.common.PagedResponse;
+import com.ecommerce.entity.Product;
+import com.ecommerce.entity.ProductReview;
 import com.ecommerce.entity.User;
 import com.ecommerce.exception.BadRequestException;
 import com.ecommerce.exception.DuplicateResourceException;
 import com.ecommerce.exception.ResourceNotFoundException;
-import com.ecommerce.repository.UserRepository;
+import com.ecommerce.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +33,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CartRepository cartRepository;
+    private final AddressRepository addressRepository;
+    private final ProductReviewRepository productReviewRepository;
+    private final NotificationRepository notificationRepository;
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
     public UserResponse getProfile(Long userId) {
@@ -94,6 +108,59 @@ public class UserService {
         user.setEnabled(enabled);
         log.info("Admin {} {} user {}", adminId, enabled ? "enabled" : "disabled", userId);
         return UserResponse.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public void deleteUser(Long adminId, Long userId) {
+        if (adminId.equals(userId)) {
+            throw new BadRequestException("You cannot delete your own administrator account.");
+        }
+
+        User user = findUserOrThrow(userId);
+
+        // 1. Delete user's cart and cart items if any
+        cartRepository.findByUserId(userId).ifPresent(cartRepository::delete);
+
+        // 2. Delete user's saved addresses
+        addressRepository.deleteAll(addressRepository.findByUserId(userId));
+
+        // 3. Delete user's product reviews and recalculate affected product ratings
+        List<ProductReview> reviews = productReviewRepository.findByUserId(userId);
+        Set<Long> affectedProductIds = new HashSet<>();
+        for (ProductReview review : reviews) {
+            if (review.getProduct() != null) {
+                affectedProductIds.add(review.getProduct().getId());
+            }
+        }
+        productReviewRepository.deleteAll(reviews);
+        productReviewRepository.flush();
+
+        for (Long productId : affectedProductIds) {
+            recalculateProductRating(productId);
+        }
+
+        // 4. Delete user's notifications
+        notificationRepository.deleteAll(notificationRepository.findByUserId(userId));
+
+        // 5. Delete user's orders (and cascade to order items & status history)
+        orderRepository.deleteAll(orderRepository.findByUserId(userId));
+
+        // 6. Delete user entity (removes user_roles and users table record, freeing up email)
+        userRepository.delete(user);
+        log.info("Admin {} permanently deleted user account {} ({})", adminId, userId, user.getEmail());
+    }
+
+    private void recalculateProductRating(Long productId) {
+        Double average = productReviewRepository.calculateAverageRating(productId);
+        long count = productReviewRepository.countByProductId(productId);
+
+        productRepository.findById(productId).ifPresent(product -> {
+            product.setAverageRating(average == null
+                    ? BigDecimal.ZERO
+                    : BigDecimal.valueOf(average).setScale(2, RoundingMode.HALF_UP));
+            product.setReviewCount((int) count);
+            productRepository.save(product);
+        });
     }
 
     private User findUserOrThrow(Long userId) {

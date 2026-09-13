@@ -21,5 +21,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
+    List<Notification> findByUserId(Long userId);
+
     long countByStatus(NotificationStatus status);
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth, useToast } from '../../hooks'
-import { ShieldCheckIcon } from '../../components/Icons'
 import '../Auth.css'
 
 export default function AdminLogin() {
@@ -45,11 +44,7 @@ export default function AdminLogin() {
     <div className="auth-page auth-page-admin">
       <div className="auth-card auth-card-admin">
         <div className="auth-header">
-          <div className="auth-badge">
-            <ShieldCheckIcon size={14} /> Admin Portal
-          </div>
           <h1 className="auth-title">Administrator Sign In</h1>
-          <p className="auth-subtitle">Authorized store management personnel only.</p>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
@@ -97,7 +92,7 @@ export default function AdminLogin() {
         </div>
 
         <p className="auth-footer">
-          <Link to="/">← Return to Storefront</Link>
+          <Link to="/">← Home page</Link>
         </p>
       </div>
     </div>

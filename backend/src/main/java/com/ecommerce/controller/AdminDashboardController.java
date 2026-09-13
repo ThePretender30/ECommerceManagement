@@ -63,6 +63,15 @@ public class AdminDashboardController {
         return ResponseEntity.ok(userService.setEnabled(principal.getId(), id, enabled));
     }
 
+    @DeleteMapping("/users/{id}")
+    @Operation(summary = "Permanently delete a user account")
+    public ResponseEntity<com.ecommerce.dto.common.MessageResponse> deleteUser(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id) {
+        userService.deleteUser(principal.getId(), id);
+        return ResponseEntity.ok(com.ecommerce.dto.common.MessageResponse.of("User account has been permanently deleted."));
+    }
+
     @GetMapping("/notifications")
     @Operation(summary = "List WhatsApp notification attempts (sent, failed and skipped)")
     public ResponseEntity<PagedResponse<NotificationResponse>> notifications(

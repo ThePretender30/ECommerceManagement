@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-6) var(--space-4) var(--space-12);
-  background: linear-gradient(160deg, var(--color-bg) 0%, #eef2ff 100%);
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
 }
 
 .auth-page-admin {

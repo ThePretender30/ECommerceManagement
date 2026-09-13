@@ -18,6 +18,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findByUserIdOrderByPlacedAtDesc(Long userId, Pageable pageable);
 
+    List<Order> findByUserId(Long userId);
+
     @EntityGraph(attributePaths = {"items", "statusHistory"})
     Optional<Order> findByIdAndUserId(Long id, Long userId);
 

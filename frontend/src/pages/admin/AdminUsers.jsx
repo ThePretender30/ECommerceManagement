@@ -15,6 +15,7 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [toggleTarget, setToggleTarget] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const debouncedSearch = useDebounce(search, 400)
 
@@ -42,6 +43,18 @@ export default function AdminUsers() {
     } catch (err) {
       toast.error(err.message)
       setToggleTarget(null)
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      await adminService.deleteUser(deleteTarget.id)
+      toast.success(`Account for ${deleteTarget.fullName} has been permanently deleted.`)
+      setDeleteTarget(null)
+      load()
+    } catch (err) {
+      toast.error(err.message)
+      setDeleteTarget(null)
     }
   }
 
@@ -130,15 +143,26 @@ export default function AdminUsers() {
                         </span>
                       </td>
                       <td>
-                        <button
-                          type="button"
-                          className="btn btn-outline btn-sm"
-                          onClick={() => setToggleTarget(user)}
-                          disabled={isSelf}
-                          title={isSelf ? 'You cannot disable your own account' : undefined}
-                        >
-                          {user.enabled ? 'Disable' : 'Enable'}
-                        </button>
+                        <div className="row gap-2">
+                          <button
+                            type="button"
+                            className="btn btn-outline btn-sm"
+                            onClick={() => setToggleTarget(user)}
+                            disabled={isSelf}
+                            title={isSelf ? 'You cannot disable your own account' : undefined}
+                          >
+                            {user.enabled ? 'Disable' : 'Enable'}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm"
+                            onClick={() => setDeleteTarget(user)}
+                            disabled={isSelf}
+                            title={isSelf ? 'You cannot delete your own account' : undefined}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   )
@@ -163,6 +187,16 @@ export default function AdminUsers() {
         danger={toggleTarget?.enabled}
         onConfirm={handleToggle}
         onCancel={() => setToggleTarget(null)}
+      />
+
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        title={`Permanently delete ${deleteTarget?.fullName}'s account?`}
+        message={`This will permanently remove ${deleteTarget?.fullName}'s account, orders, addresses, reviews, and cart data. The user will be free to sign up again using ${deleteTarget?.email}.`}
+        confirmLabel="Delete account"
+        danger
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   )

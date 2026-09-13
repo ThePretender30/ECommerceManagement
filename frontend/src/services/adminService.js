@@ -28,6 +28,7 @@ export const adminService = {
   getUser: (id) => api.get(`/admin/users/${id}`).then((r) => r.data),
   setUserEnabled: (id, enabled) =>
     api.put(`/admin/users/${id}/enabled`, null, { params: { enabled } }).then((r) => r.data),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`).then((r) => r.data),
 
   listNotifications: (params = {}) =>
     api.get('/admin/notifications', { params }).then((r) => r.data),
