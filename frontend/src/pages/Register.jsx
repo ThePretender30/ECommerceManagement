@@ -13,7 +13,8 @@ export default function Register() {
   const [form, setForm] = useState({
     fullName: '',
     email: '',
-    phoneNumber: '',
+    countryCode: '+91',
+    mobileNumber: '',
     password: '',
     confirmPassword: '',
   })
@@ -37,6 +38,27 @@ export default function Register() {
     setFieldErrors((current) => ({ ...current, [name]: undefined }))
   }
 
+  const handleCountryCodeChange = (event) => {
+    let val = event.target.value.trim()
+    if (!val) {
+      val = '+'
+    } else if (!val.startsWith('+')) {
+      val = '+' + val.replace(/\D/g, '')
+    } else {
+      val = '+' + val.slice(1).replace(/\D/g, '')
+    }
+    val = val.slice(0, 5) // max '+' followed by 4 digits (e.g. +1234)
+    setForm((current) => ({ ...current, countryCode: val }))
+    setFieldErrors((current) => ({ ...current, countryCode: undefined, phoneNumber: undefined }))
+  }
+
+  const handleMobileNumberChange = (event) => {
+    // Strictly digits only (no spaces, dashes, symbols or letters), capped at 10 digits
+    const digitsOnly = event.target.value.replace(/\D/g, '').slice(0, 10)
+    setForm((current) => ({ ...current, mobileNumber: digitsOnly }))
+    setFieldErrors((current) => ({ ...current, mobileNumber: undefined, phoneNumber: undefined }))
+  }
+
   const handleFormSubmit = async (event) => {
     event.preventDefault()
     setError(null)
@@ -48,6 +70,18 @@ export default function Register() {
       return
     }
 
+    const countryCodeRegex = /^\+[1-9]\d{0,3}$/
+    if (!countryCodeRegex.test(form.countryCode.trim())) {
+      setFieldErrors({ countryCode: 'Enter a valid country code (e.g. +91, +1, +44).' })
+      return
+    }
+
+    const mobileRegex = /^\d{9,10}$/
+    if (!mobileRegex.test(form.mobileNumber.trim())) {
+      setFieldErrors({ mobileNumber: 'Mobile number must be 9 or 10 digits only (numbers only).' })
+      return
+    }
+
     if (form.password !== form.confirmPassword) {
       setFieldErrors({ confirmPassword: 'Passwords do not match.' })
       return
@@ -55,10 +89,11 @@ export default function Register() {
 
     setSubmitting(true)
     try {
+      const fullPhoneNumber = form.countryCode.trim() + form.mobileNumber.trim()
       const challengeResponse = await initiateRegister({
         fullName: form.fullName,
         email: form.email,
-        phoneNumber: form.phoneNumber,
+        phoneNumber: fullPhoneNumber,
         password: form.password,
       })
       setChallenge(challengeResponse)
@@ -167,23 +202,47 @@ export default function Register() {
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="phoneNumber">WhatsApp number</label>
-              <input
-                id="phoneNumber"
-                name="phoneNumber"
-                type="tel"
-                className={fieldErrors.phoneNumber ? 'form-control has-error' : 'form-control'}
-                value={form.phoneNumber}
-                onChange={handleChange}
-                placeholder="+919876543210"
-                autoComplete="tel"
-                required
-              />
-              {fieldErrors.phoneNumber ? (
+              <label className="form-label" htmlFor="mobileNumber">WhatsApp number</label>
+              <div className="phone-input-group">
+                <input
+                  id="countryCode"
+                  name="countryCode"
+                  type="text"
+                  className={fieldErrors.countryCode ? 'form-control country-code-input has-error' : 'form-control country-code-input'}
+                  value={form.countryCode}
+                  onChange={handleCountryCodeChange}
+                  placeholder="+91"
+                  maxLength={5}
+                  title="Country calling code (e.g. +91, +1, +44)"
+                  required
+                />
+                <input
+                  id="mobileNumber"
+                  name="mobileNumber"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={10}
+                  className={fieldErrors.mobileNumber || fieldErrors.phoneNumber ? 'form-control mobile-number-input has-error' : 'form-control mobile-number-input'}
+                  value={form.mobileNumber}
+                  onChange={handleMobileNumberChange}
+                  placeholder="9876543210 (9-10 digits)"
+                  autoComplete="tel-national"
+                  required
+                />
+              </div>
+              {fieldErrors.countryCode && (
+                <span className="form-error">{fieldErrors.countryCode}</span>
+              )}
+              {fieldErrors.mobileNumber && (
+                <span className="form-error">{fieldErrors.mobileNumber}</span>
+              )}
+              {!fieldErrors.countryCode && !fieldErrors.mobileNumber && fieldErrors.phoneNumber && (
                 <span className="form-error">{fieldErrors.phoneNumber}</span>
-              ) : (
+              )}
+              {!fieldErrors.countryCode && !fieldErrors.mobileNumber && !fieldErrors.phoneNumber && (
                 <span className="form-hint">
-                  Include your country code. We send order updates to this number.
+                  Separate country code (e.g. +91) and 9 or 10-digit mobile number (numbers only).
                 </span>
               )}
             </div>

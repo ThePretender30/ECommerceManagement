@@ -6,13 +6,31 @@ import { useAuth, useToast } from '../hooks'
 import { formatDate } from '../utils/format'
 import './Profile.css'
 
+function parsePhone(rawPhone) {
+  if (!rawPhone) return { countryCode: '+91', mobileNumber: '' }
+  const trimmed = rawPhone.trim()
+  const match = trimmed.match(/^(\+[1-9]\d{0,3})(\d{9,10})$/)
+  if (match) {
+    return { countryCode: match[1], mobileNumber: match[2] }
+  }
+  if (trimmed.startsWith('+91') && trimmed.length > 3) {
+    return { countryCode: '+91', mobileNumber: trimmed.slice(3).replace(/\D/g, '').slice(0, 10) }
+  }
+  if (trimmed.startsWith('+')) {
+    return { countryCode: trimmed.slice(0, 3), mobileNumber: trimmed.slice(3).replace(/\D/g, '').slice(0, 10) }
+  }
+  return { countryCode: '+91', mobileNumber: trimmed.replace(/\D/g, '').slice(0, 10) }
+}
+
 export default function Profile() {
   const { user, updateUser } = useAuth()
   const toast = useToast()
 
+  const initialPhone = parsePhone(user?.phoneNumber)
   const [profile, setProfile] = useState({
     fullName: user?.fullName ?? '',
-    phoneNumber: user?.phoneNumber ?? '',
+    countryCode: initialPhone.countryCode,
+    mobileNumber: initialPhone.mobileNumber,
   })
   const [profileErrors, setProfileErrors] = useState({})
   const [savingProfile, setSavingProfile] = useState(false)
@@ -25,6 +43,26 @@ export default function Profile() {
   const [passwordErrors, setPasswordErrors] = useState({})
   const [savingPassword, setSavingPassword] = useState(false)
 
+  const handleCountryCodeChange = (event) => {
+    let val = event.target.value.trim()
+    if (!val) {
+      val = '+'
+    } else if (!val.startsWith('+')) {
+      val = '+' + val.replace(/\D/g, '')
+    } else {
+      val = '+' + val.slice(1).replace(/\D/g, '')
+    }
+    val = val.slice(0, 5)
+    setProfile((p) => ({ ...p, countryCode: val }))
+    setProfileErrors((p) => ({ ...p, countryCode: undefined, phoneNumber: undefined }))
+  }
+
+  const handleMobileNumberChange = (event) => {
+    const digitsOnly = event.target.value.replace(/\D/g, '').slice(0, 10)
+    setProfile((p) => ({ ...p, mobileNumber: digitsOnly }))
+    setProfileErrors((p) => ({ ...p, mobileNumber: undefined, phoneNumber: undefined }))
+  }
+
   const handleProfileSubmit = async (event) => {
     event.preventDefault()
     setProfileErrors({})
@@ -34,10 +72,26 @@ export default function Profile() {
       return
     }
 
+    const countryCodeRegex = /^\+[1-9]\d{0,3}$/
+    if (!countryCodeRegex.test(profile.countryCode.trim())) {
+      setProfileErrors({ countryCode: 'Enter a valid country code (e.g. +91, +1, +44).' })
+      return
+    }
+
+    const mobileRegex = /^\d{9,10}$/
+    if (!mobileRegex.test(profile.mobileNumber.trim())) {
+      setProfileErrors({ mobileNumber: 'Mobile number must be 9 or 10 digits only (numbers only).' })
+      return
+    }
+
     setSavingProfile(true)
 
     try {
-      const updated = await authService.updateProfile(profile)
+      const fullPhoneNumber = profile.countryCode.trim() + profile.mobileNumber.trim()
+      const updated = await authService.updateProfile({
+        fullName: profile.fullName,
+        phoneNumber: fullPhoneNumber,
+      })
       updateUser(updated)
       toast.success('Your profile has been updated.')
     } catch (err) {
@@ -147,20 +201,46 @@ export default function Profile() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" htmlFor="phoneNumber">WhatsApp number</label>
-                  <input
-                    id="phoneNumber"
-                    type="tel"
-                    className={profileErrors.phoneNumber ? 'form-control has-error' : 'form-control'}
-                    value={profile.phoneNumber}
-                    onChange={(e) => setProfile((p) => ({ ...p, phoneNumber: e.target.value }))}
-                    placeholder="+919876543210"
-                    required
-                  />
-                  {profileErrors.phoneNumber ? (
+                  <label className="form-label" htmlFor="mobileNumber">WhatsApp number</label>
+                  <div className="phone-input-group">
+                    <input
+                      id="countryCode"
+                      name="countryCode"
+                      type="text"
+                      className={profileErrors.countryCode ? 'form-control country-code-input has-error' : 'form-control country-code-input'}
+                      value={profile.countryCode}
+                      onChange={handleCountryCodeChange}
+                      placeholder="+91"
+                      maxLength={5}
+                      title="Country calling code (e.g. +91, +1, +44)"
+                      required
+                    />
+                    <input
+                      id="mobileNumber"
+                      name="mobileNumber"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={10}
+                      className={profileErrors.mobileNumber || profileErrors.phoneNumber ? 'form-control mobile-number-input has-error' : 'form-control mobile-number-input'}
+                      value={profile.mobileNumber}
+                      onChange={handleMobileNumberChange}
+                      placeholder="9876543210 (9-10 digits)"
+                      autoComplete="tel-national"
+                      required
+                    />
+                  </div>
+                  {profileErrors.countryCode && (
+                    <span className="form-error">{profileErrors.countryCode}</span>
+                  )}
+                  {profileErrors.mobileNumber && (
+                    <span className="form-error">{profileErrors.mobileNumber}</span>
+                  )}
+                  {!profileErrors.countryCode && !profileErrors.mobileNumber && profileErrors.phoneNumber && (
                     <span className="form-error">{profileErrors.phoneNumber}</span>
-                  ) : (
-                    <span className="form-hint">Order notifications are sent to this number.</span>
+                  )}
+                  {!profileErrors.countryCode && !profileErrors.mobileNumber && !profileErrors.phoneNumber && (
+                    <span className="form-hint">Separate country code (e.g. +91) and 9 or 10-digit mobile number.</span>
                   )}
                 </div>
 

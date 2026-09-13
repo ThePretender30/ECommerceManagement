@@ -12,7 +12,7 @@ public record UpdateProfileRequest(
         String fullName,
 
         @NotBlank(message = "Phone number is required")
-        @Pattern(regexp = "^\\+[1-9]\\d{7,14}$",
-                 message = "Phone number must be in international format, e.g. +919876543210")
+        @Pattern(regexp = "^\\+[1-9]\\d{0,3}\\d{9,10}$",
+                 message = "Phone number must include a valid country code (e.g. +91) and a 9 or 10-digit mobile number")
         String phoneNumber
 ) {}

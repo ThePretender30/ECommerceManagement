@@ -53,9 +53,9 @@ public class UserService {
             user.setFullName(fullName.trim());
         }
         if (phoneNumber != null && !phoneNumber.isBlank()) {
-            if (!phoneNumber.trim().matches("^\\+[1-9]\\d{7,14}$")) {
+            if (!phoneNumber.trim().matches("^\\+[1-9]\\d{0,3}\\d{9,10}$")) {
                 throw new BadRequestException(
-                        "Phone number must be in international format, e.g. +919876543210");
+                        "Phone number must include a valid country code (e.g. +91) and a 9 or 10-digit mobile number");
             }
             user.setPhoneNumber(phoneNumber.trim());
         }
