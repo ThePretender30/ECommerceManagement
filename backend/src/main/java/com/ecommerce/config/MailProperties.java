@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class MailProperties {
 
     private boolean enabled = true;
+    private String brevoApiKey = "";
     private String host = "";
     private int port = 587;
     private String username = "";

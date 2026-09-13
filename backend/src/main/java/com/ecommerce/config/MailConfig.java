@@ -1,8 +1,10 @@
 package com.ecommerce.config;
 
+import com.ecommerce.email.BrevoEmailService;
 import com.ecommerce.email.EmailService;
 import com.ecommerce.email.LoggingEmailService;
 import com.ecommerce.email.SmtpEmailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,7 @@ import java.util.Properties;
 public class MailConfig {
 
     private final MailProperties mailProperties;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public EmailService emailService() {
@@ -24,8 +27,25 @@ public class MailConfig {
             return new LoggingEmailService("app.mail.enabled is false");
         }
 
+        String fromEmail = (mailProperties.getFrom() != null && !mailProperties.getFrom().isBlank() && !mailProperties.getFrom().contains("no-reply@rozbazaar.local"))
+                ? mailProperties.getFrom().trim()
+                : (mailProperties.getUsername() != null && !mailProperties.getUsername().isBlank())
+                        ? mailProperties.getUsername().trim()
+                        : "no-reply@rozbazaar.local";
+
+        String fromName = (mailProperties.getFromName() != null && !mailProperties.getFromName().isBlank())
+                ? mailProperties.getFromName().trim()
+                : "Roz Bazaar";
+
+        // 1. Prefer Brevo HTTPS REST API if API key is provided (works on Render and all cloud hosts without SMTP port blocks)
+        if (mailProperties.getBrevoApiKey() != null && !mailProperties.getBrevoApiKey().isBlank()) {
+            log.info("Initialized Brevo HTTPS API email sender (from={})", fromEmail);
+            return new BrevoEmailService(mailProperties.getBrevoApiKey(), fromEmail, fromName, objectMapper);
+        }
+
+        // 2. Standard SMTP fallback
         if (mailProperties.getHost() == null || mailProperties.getHost().isBlank()) {
-            return new LoggingEmailService("app.mail.host is not configured");
+            return new LoggingEmailService("neither Brevo API key nor SMTP host is configured");
         }
 
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
@@ -63,16 +83,6 @@ public class MailConfig {
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.starttls.required", "true");
         }
-
-        String fromEmail = (mailProperties.getFrom() != null && !mailProperties.getFrom().isBlank() && !mailProperties.getFrom().contains("no-reply@rozbazaar.local"))
-                ? mailProperties.getFrom().trim()
-                : (mailProperties.getUsername() != null && !mailProperties.getUsername().isBlank())
-                        ? mailProperties.getUsername().trim()
-                        : "no-reply@rozbazaar.local";
-
-        String fromName = (mailProperties.getFromName() != null && !mailProperties.getFromName().isBlank())
-                ? mailProperties.getFromName().trim()
-                : "Roz Bazaar";
 
         log.info("Initialized SMTP email sender (host={}, port={}, user={}, from={})",
                 mailProperties.getHost(), mailProperties.getPort(), mailProperties.getUsername(), fromEmail);
