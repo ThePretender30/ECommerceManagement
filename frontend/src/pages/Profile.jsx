@@ -201,34 +201,40 @@ export default function Profile() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" htmlFor="mobileNumber">WhatsApp number</label>
+                  <label className="form-label">WhatsApp phone number</label>
                   <div className="phone-input-group">
-                    <input
-                      id="countryCode"
-                      name="countryCode"
-                      type="text"
-                      className={profileErrors.countryCode ? 'form-control country-code-input has-error' : 'form-control country-code-input'}
-                      value={profile.countryCode}
-                      onChange={handleCountryCodeChange}
-                      placeholder="+91"
-                      maxLength={5}
-                      title="Country calling code (e.g. +91, +1, +44)"
-                      required
-                    />
-                    <input
-                      id="mobileNumber"
-                      name="mobileNumber"
-                      type="tel"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={10}
-                      className={profileErrors.mobileNumber || profileErrors.phoneNumber ? 'form-control mobile-number-input has-error' : 'form-control mobile-number-input'}
-                      value={profile.mobileNumber}
-                      onChange={handleMobileNumberChange}
-                      placeholder="9876543210 (9-10 digits)"
-                      autoComplete="tel-national"
-                      required
-                    />
+                    <div className="phone-field-code">
+                      <span className="phone-sublabel">Country code</span>
+                      <input
+                        id="countryCode"
+                        name="countryCode"
+                        type="text"
+                        className={profileErrors.countryCode ? 'form-control country-code-input has-error' : 'form-control country-code-input'}
+                        value={profile.countryCode}
+                        onChange={handleCountryCodeChange}
+                        placeholder="+91"
+                        maxLength={5}
+                        title="Country calling code (e.g. +91, +1, +44)"
+                        required
+                      />
+                    </div>
+                    <div className="phone-field-number">
+                      <span className="phone-sublabel">Mobile number (9–10 digits)</span>
+                      <input
+                        id="mobileNumber"
+                        name="mobileNumber"
+                        type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        maxLength={10}
+                        className={profileErrors.mobileNumber || profileErrors.phoneNumber ? 'form-control mobile-number-input has-error' : 'form-control mobile-number-input'}
+                        value={profile.mobileNumber}
+                        onChange={handleMobileNumberChange}
+                        placeholder="9876543210 (numbers only)"
+                        autoComplete="tel-national"
+                        required
+                      />
+                    </div>
                   </div>
                   {profileErrors.countryCode && (
                     <span className="form-error">{profileErrors.countryCode}</span>
@@ -240,7 +246,7 @@ export default function Profile() {
                     <span className="form-error">{profileErrors.phoneNumber}</span>
                   )}
                   {!profileErrors.countryCode && !profileErrors.mobileNumber && !profileErrors.phoneNumber && (
-                    <span className="form-hint">Separate country code (e.g. +91) and 9 or 10-digit mobile number.</span>
+                    <span className="form-hint">Separate country code (e.g. +91) and 9 or 10-digit mobile number. Numbers only.</span>
                   )}
                 </div>
 
