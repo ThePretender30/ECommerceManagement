@@ -40,17 +40,21 @@ export default function MyOrders() {
     event.preventDefault()
     event.stopPropagation()
 
-    if (!order.items || order.items.length === 0) {
-      toast.info('No items found to reorder.')
-      return
-    }
-
     setReorderingId(order.id)
     let addedCount = 0
     let failedCount = 0
 
     try {
-      for (const item of order.items) {
+      // Summary response does not contain items array; fetch full order details
+      const fullOrder = await orderService.getById(order.id)
+      const items = fullOrder?.items || []
+
+      if (items.length === 0) {
+        toast.info('No items found to reorder.')
+        return
+      }
+
+      for (const item of items) {
         if (item.productId) {
           try {
             await addItem(item.productId, item.quantity || 1)
@@ -68,6 +72,8 @@ export default function MyOrders() {
         navigate('/cart')
       } else if (failedCount > 0) {
         toast.error('Items from this order are currently out of stock.')
+      } else {
+        toast.info('No available items to reorder.')
       }
     } catch (err) {
       toast.error(err.message || 'Failed to reorder items.')
