@@ -23,12 +23,13 @@ import java.util.Set;
 @Slf4j
 public class DataSeeder implements CommandLineRunner {
 
-    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminSeedProperties adminProperties;
+    private final com.ecommerce.repository.CouponRepository couponRepository;
 
     @Override
     @Transactional
@@ -37,6 +38,7 @@ public class DataSeeder implements CommandLineRunner {
         seedAdminUser();
         seedCategories();
         seedProducts();
+        seedCoupons();
     }
 
     private void seedRoles() {
@@ -210,5 +212,42 @@ public class DataSeeder implements CommandLineRunner {
                     .active(true)
                     .build());
         }
+    }
+
+    private void seedCoupons() {
+        if (couponRepository.count() > 0) {
+            return;
+        }
+
+        log.info("Seeding initial discount coupons");
+
+        couponRepository.save(com.ecommerce.entity.Coupon.builder()
+                .code("WELCOME10")
+                .description("10% off on your first order (up to ₹150)")
+                .discountType(com.ecommerce.entity.DiscountType.PERCENTAGE)
+                .discountValue(new BigDecimal("10.00"))
+                .minOrderAmount(new BigDecimal("499.00"))
+                .maxDiscountAmount(new BigDecimal("150.00"))
+                .active(true)
+                .build());
+
+        couponRepository.save(com.ecommerce.entity.Coupon.builder()
+                .code("ROZ50")
+                .description("Flat ₹50 off on orders above ₹299")
+                .discountType(com.ecommerce.entity.DiscountType.FLAT)
+                .discountValue(new BigDecimal("50.00"))
+                .minOrderAmount(new BigDecimal("299.00"))
+                .active(true)
+                .build());
+
+        couponRepository.save(com.ecommerce.entity.Coupon.builder()
+                .code("FESTIVE20")
+                .description("20% mega discount on orders above ₹999")
+                .discountType(com.ecommerce.entity.DiscountType.PERCENTAGE)
+                .discountValue(new BigDecimal("20.00"))
+                .minOrderAmount(new BigDecimal("999.00"))
+                .maxDiscountAmount(new BigDecimal("500.00"))
+                .active(true)
+                .build());
     }
 }

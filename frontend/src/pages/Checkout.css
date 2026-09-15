@@ -127,3 +127,72 @@
   font-weight: var(--weight-semibold);
   white-space: nowrap;
 }
+
+.checkout-summary .coupon-box {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.checkout-summary .coupon-label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.checkout-summary .coupon-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.checkout-summary .coupon-input {
+  text-transform: uppercase;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.05em;
+  font-size: var(--text-xs);
+  padding: var(--space-2) var(--space-3);
+}
+
+.checkout-summary .coupon-applied-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: var(--radius);
+  color: #065f46;
+  font-size: var(--text-xs);
+  margin-top: var(--space-2);
+}
+
+.checkout-summary .coupon-applied-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.checkout-summary .coupon-code-badge {
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.05em;
+}
+
+.checkout-summary .coupon-remove-btn {
+  background: none;
+  border: none;
+  color: #059669;
+  cursor: pointer;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  padding: 0 var(--space-2);
+  line-height: 1;
+}
+
+.checkout-summary .coupon-remove-btn:hover {
+  color: #dc2626;
+}
+

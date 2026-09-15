@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { EmptyState, ErrorState, Loader, Pagination } from '../components/Common'
-import { PackageIcon } from '../components/Icons'
+import { CartIcon, PackageIcon } from '../components/Icons'
+import { useCart, useToast } from '../hooks'
 import orderService from '../services/orderService'
 import {
   formatCurrency,
@@ -17,6 +18,11 @@ export default function MyOrders() {
   const [page, setPage] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [reorderingId, setReorderingId] = useState(null)
+
+  const { addItem } = useCart()
+  const toast = useToast()
+  const navigate = useNavigate()
 
   const load = () => {
     setLoading(true)
@@ -29,6 +35,46 @@ export default function MyOrders() {
   }
 
   useEffect(load, [page])
+
+  const handleBuyAgain = async (event, order) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (!order.items || order.items.length === 0) {
+      toast.info('No items found to reorder.')
+      return
+    }
+
+    setReorderingId(order.id)
+    let addedCount = 0
+    let failedCount = 0
+
+    try {
+      for (const item of order.items) {
+        if (item.productId) {
+          try {
+            await addItem(item.productId, item.quantity || 1)
+            addedCount++
+          } catch {
+            failedCount++
+          }
+        }
+      }
+
+      if (addedCount > 0) {
+        toast.success(
+          `Added ${addedCount} ${addedCount === 1 ? 'item' : 'items'} from Order #${order.orderNumber} to your cart!`
+        )
+        navigate('/cart')
+      } else if (failedCount > 0) {
+        toast.error('Items from this order are currently out of stock.')
+      }
+    } catch (err) {
+      toast.error(err.message || 'Failed to reorder items.')
+    } finally {
+      setReorderingId(null)
+    }
+  }
 
   if (loading) return <Loader fullPage label="Loading your orders…" />
   if (error) return <ErrorState message={error} onRetry={load} />
@@ -81,6 +127,16 @@ export default function MyOrders() {
             <div className="order-row-meta">
               <span className={`badge ${statusBadgeClass(order.status)}`}>{order.statusLabel}</span>
               <span className="order-row-total">{formatCurrency(order.totalAmount)}</span>
+              <button
+                type="button"
+                className="btn btn-outline btn-sm order-row-reorder"
+                onClick={(e) => handleBuyAgain(e, order)}
+                disabled={reorderingId === order.id}
+                title="Add all items from this order back to your cart"
+              >
+                <CartIcon size={14} />
+                {reorderingId === order.id ? 'Adding…' : 'Buy again'}
+              </button>
             </div>
           </Link>
         ))}

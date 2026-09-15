@@ -42,7 +42,7 @@ export default function ProductCard({ product }) {
             onError={handleImageError}
           />
           {outOfStock && <span className="product-card-flag is-out">Out of stock</span>}
-          {lowStock && <span className="product-card-flag is-low">Only {product.stock} left</span>}
+          {lowStock && <span className="product-card-flag is-low">⚡ Only {product.stock} left!</span>}
         </div>
 
         <div className="product-card-body">
@@ -62,6 +62,7 @@ export default function ProductCard({ product }) {
 
           <div className="product-card-footer">
             <span className="product-card-price">{formatCurrency(product.price)}</span>
+            {lowStock && <span className="product-card-stock-warning">Low Stock</span>}
           </div>
         </div>
       </Link>
@@ -72,7 +73,7 @@ export default function ProductCard({ product }) {
         onClick={handleAddToCart}
         disabled={outOfStock}
       >
-        {outOfStock ? 'Unavailable' : 'Add to cart'}
+        {outOfStock ? 'Out of stock' : 'Add to cart'}
       </button>
     </article>
   )

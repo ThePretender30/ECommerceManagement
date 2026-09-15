@@ -137,6 +137,16 @@ export default function AdminOrderDetail() {
                 ))}
               </div>
 
+              <div className="cart-summary-row mt-4">
+                <span>Subtotal</span>
+                <span>{formatCurrency(order.subtotalAmount || order.totalAmount)}</span>
+              </div>
+              {order.couponCode && order.discountAmount > 0 && (
+                <div className="cart-summary-row text-success">
+                  <span>Coupon ({order.couponCode})</span>
+                  <span>-{formatCurrency(order.discountAmount)}</span>
+                </div>
+              )}
               <div className="cart-summary-row is-total">
                 <span>Order total</span>
                 <span>{formatCurrency(order.totalAmount)}</span>

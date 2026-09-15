@@ -50,8 +50,22 @@
   color: var(--color-text-inverse);
 }
 
-.product-card-flag.is-out { background-color: var(--color-danger); }
-.product-card-flag.is-low { background-color: var(--color-warning); }
+.product-card-flag.is-out {
+  background-color: #dc2626;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.product-card-flag.is-low {
+  background-color: #d97706;
+  box-shadow: 0 2px 4px rgba(217, 119, 6, 0.3);
+  font-weight: var(--weight-bold);
+  animation: pulse-subtle 2s infinite ease-in-out;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
 
 .product-card-body {
   padding: var(--space-4);

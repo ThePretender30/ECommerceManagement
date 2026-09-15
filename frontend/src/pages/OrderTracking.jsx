@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Breadcrumbs, ErrorState, Loader } from '../components/Common'
+import { CartIcon } from '../components/Icons'
 import { ConfirmDialog } from '../components/Modal'
 import OrderStatusTimeline from '../components/OrderStatusTimeline'
 import orderService from '../services/orderService'
-import { useToast } from '../hooks'
+import { useCart, useToast } from '../hooks'
 import {
   formatCurrency,
   formatDateTime,
@@ -16,7 +17,9 @@ import './Orders.css'
 
 export default function OrderTracking() {
   const { id } = useParams()
+  const { addItem } = useCart()
   const toast = useToast()
+  const navigate = useNavigate()
 
   const [order, setOrder] = useState(null)
   const [tracking, setTracking] = useState(null)
@@ -24,6 +27,7 @@ export default function OrderTracking() {
   const [error, setError] = useState(null)
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  const [reordering, setReordering] = useState(false)
 
   const load = useCallback(() => {
     setLoading(true)
@@ -55,6 +59,43 @@ export default function OrderTracking() {
     }
   }
 
+  const handleBuyAgain = async () => {
+    if (!order?.items || order.items.length === 0) {
+      toast.info('No items found to reorder.')
+      return
+    }
+
+    setReordering(true)
+    let addedCount = 0
+    let failedCount = 0
+
+    try {
+      for (const item of order.items) {
+        if (item.productId) {
+          try {
+            await addItem(item.productId, item.quantity || 1)
+            addedCount++
+          } catch {
+            failedCount++
+          }
+        }
+      }
+
+      if (addedCount > 0) {
+        toast.success(
+          `Added ${addedCount} ${addedCount === 1 ? 'item' : 'items'} from Order #${order.orderNumber} to your cart!`
+        )
+        navigate('/cart')
+      } else if (failedCount > 0) {
+        toast.error('Items from this order are currently out of stock.')
+      }
+    } catch (err) {
+      toast.error(err.message || 'Failed to reorder items.')
+    } finally {
+      setReordering(false)
+    }
+  }
+
   if (loading) return <Loader fullPage label="Loading your order…" />
   if (error) return <ErrorState message={error} onRetry={load} />
   if (!order) return null
@@ -76,10 +117,20 @@ export default function OrderTracking() {
         </div>
         <div className="order-header-actions">
           <span className={`badge ${statusBadgeClass(order.status)}`}>{order.statusLabel}</span>
+          <button
+            type="button"
+            className="btn btn-outline btn-sm"
+            onClick={handleBuyAgain}
+            disabled={reordering}
+            title="Add all items from this order back to your cart"
+          >
+            <CartIcon size={14} />
+            {reordering ? 'Adding…' : 'Buy again'}
+          </button>
           {order.cancellable && (
             <button
               type="button"
-              className="btn btn-outline btn-sm"
+              className="btn btn-danger btn-sm"
               onClick={() => setConfirmCancel(true)}
             >
               Cancel order
@@ -124,6 +175,16 @@ export default function OrderTracking() {
               ))}
             </div>
 
+            <div className="cart-summary-row mt-4">
+              <span>Subtotal</span>
+              <span>{formatCurrency(order.subtotalAmount || order.totalAmount)}</span>
+            </div>
+            {order.couponCode && order.discountAmount > 0 && (
+              <div className="cart-summary-row text-success">
+                <span>Coupon ({order.couponCode})</span>
+                <span>-{formatCurrency(order.discountAmount)}</span>
+              </div>
+            )}
             <div className="cart-summary-row is-total">
               <span>Order total</span>
               <span>{formatCurrency(order.totalAmount)}</span>

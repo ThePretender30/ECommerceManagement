@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Loader } from '../components/Common'
 import { addressService } from '../services/catalogService'
+import couponService from '../services/couponService'
 import orderService from '../services/orderService'
 import { useCart, useToast } from '../hooks'
 import { formatCurrency, handleImageError, FALLBACK_IMAGE } from '../utils/format'
@@ -19,9 +20,10 @@ const EMPTY_ADDRESS = {
 }
 
 export default function Checkout() {
-  const { items, subtotal, total, checkoutAllowed, loading: cartLoading, reset } = useCart()
+  const { items, subtotal, checkoutAllowed, loading: cartLoading, reset } = useCart()
   const toast = useToast()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [addresses, setAddresses] = useState([])
   const [loadingAddresses, setLoadingAddresses] = useState(true)
@@ -32,6 +34,10 @@ export default function Checkout() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [error, setError] = useState(null)
   const [placing, setPlacing] = useState(false)
+
+  const [couponCodeInput, setCouponCodeInput] = useState('')
+  const [applyingCoupon, setApplyingCoupon] = useState(false)
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
 
   useEffect(() => {
     addressService
@@ -49,11 +55,53 @@ export default function Checkout() {
       .finally(() => setLoadingAddresses(false))
   }, [])
 
+  // Auto-apply coupon passed from Cart page
+  useEffect(() => {
+    const passedCode = location.state?.couponCode
+    if (passedCode && subtotal > 0 && !appliedCoupon) {
+      couponService
+        .validate(passedCode, subtotal)
+        .then((res) => {
+          if (res.valid) setAppliedCoupon(res)
+        })
+        .catch(() => {})
+    }
+  }, [location.state, subtotal, appliedCoupon])
+
   useEffect(() => {
     if (!cartLoading && items.length === 0) {
       navigate('/cart', { replace: true })
     }
   }, [cartLoading, items.length, navigate])
+
+  const handleApplyCoupon = async (e) => {
+    e.preventDefault()
+    if (!couponCodeInput.trim()) return
+
+    setApplyingCoupon(true)
+    try {
+      const res = await couponService.validate(couponCodeInput.trim(), subtotal)
+      if (res.valid) {
+        setAppliedCoupon(res)
+        toast.success(`Coupon ${res.code} applied! You saved ${formatCurrency(res.discountAmount)}.`)
+        setCouponCodeInput('')
+      } else {
+        toast.error(res.message || 'Invalid coupon code.')
+      }
+    } catch (err) {
+      toast.error(err.message || 'Failed to apply coupon.')
+    } finally {
+      setApplyingCoupon(false)
+    }
+  }
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null)
+    toast.info('Coupon removed.')
+  }
+
+  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0
+  const finalCheckoutTotal = Math.max(0, Number(subtotal) - Number(discountAmount))
 
   const handleAddressChange = (event) => {
     const { name, value } = event.target
@@ -74,8 +122,8 @@ export default function Checkout() {
     setPlacing(true)
     try {
       const payload = useNewAddress
-        ? { newAddress, saveNewAddress }
-        : { addressId: selectedAddressId }
+        ? { newAddress, saveNewAddress, couponCode: appliedCoupon?.code }
+        : { addressId: selectedAddressId, couponCode: appliedCoupon?.code }
 
       const order = await orderService.place(payload)
 
@@ -308,17 +356,68 @@ export default function Checkout() {
         <aside className="checkout-summary">
           <h2 className="cart-summary-title">Order total</h2>
 
+          <div className="coupon-box">
+            <span className="coupon-label">Promo Code / Coupon</span>
+            {!appliedCoupon ? (
+              <div className="coupon-form">
+                <input
+                  type="text"
+                  className="form-control coupon-input"
+                  placeholder="e.g. WELCOME10"
+                  value={couponCodeInput}
+                  onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
+                  disabled={applyingCoupon}
+                />
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={handleApplyCoupon}
+                  disabled={applyingCoupon || !couponCodeInput.trim()}
+                >
+                  {applyingCoupon ? 'Applying…' : 'Apply'}
+                </button>
+              </div>
+            ) : (
+              <div className="coupon-applied-tag">
+                <div className="coupon-applied-info">
+                  <span className="coupon-code-badge">🏷️ {appliedCoupon.code}</span>
+                  <span className="text-xs text-success">
+                    {appliedCoupon.discountType === 'PERCENTAGE'
+                      ? `${appliedCoupon.discountValue}% off`
+                      : `${formatCurrency(appliedCoupon.discountValue)} flat off`}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="coupon-remove-btn"
+                  onClick={handleRemoveCoupon}
+                  title="Remove coupon"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="cart-summary-row">
             <span>Items ({items.length})</span>
             <span>{formatCurrency(subtotal)}</span>
           </div>
+
+          {appliedCoupon && (
+            <div className="cart-summary-row text-success">
+              <span>Coupon Discount ({appliedCoupon.code})</span>
+              <span>-{formatCurrency(discountAmount)}</span>
+            </div>
+          )}
+
           <div className="cart-summary-row">
             <span>Delivery</span>
             <span className="text-success">Free</span>
           </div>
           <div className="cart-summary-row is-total">
             <span>Total</span>
-            <span>{formatCurrency(total)}</span>
+            <span>{formatCurrency(finalCheckoutTotal)}</span>
           </div>
 
           <button

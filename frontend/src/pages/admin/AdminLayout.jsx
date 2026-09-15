@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { BarChartIcon, FolderIcon, MessageIcon, PackageIcon, ReceiptIcon, UsersIcon } from '../../components/Icons'
+import { BarChartIcon, FolderIcon, MessageIcon, PackageIcon, ReceiptIcon, TagIcon, UsersIcon } from '../../components/Icons'
 import { useAuth } from '../../hooks'
 import './Admin.css'
 
@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { to: '/admin/products', label: 'Products', icon: <PackageIcon size={18} /> },
   { to: '/admin/categories', label: 'Categories', icon: <FolderIcon size={18} /> },
   { to: '/admin/orders', label: 'Orders', icon: <ReceiptIcon size={18} /> },
+  { to: '/admin/coupons', label: 'Coupons', icon: <TagIcon size={18} /> },
   { to: '/admin/users', label: 'Users', icon: <UsersIcon size={18} /> },
   { to: '/admin/notifications', label: 'Notifications', icon: <MessageIcon size={18} /> },
 ]

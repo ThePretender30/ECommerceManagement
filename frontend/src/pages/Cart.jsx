@@ -4,17 +4,50 @@ import { EmptyState, Loader, QuantityStepper } from '../components/Common'
 import { CartIcon } from '../components/Icons'
 import { ConfirmDialog } from '../components/Modal'
 import { useCart, useToast } from '../hooks'
+import couponService from '../services/couponService'
 import { formatCurrency, handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './Cart.css'
 
 export default function Cart() {
-  const { cart, items, loading, subtotal, total, checkoutAllowed, updateItem, removeItem, clear } =
+  const { cart, items, loading, subtotal, checkoutAllowed, updateItem, removeItem, clear } =
     useCart()
   const toast = useToast()
   const navigate = useNavigate()
 
   const [busyItemId, setBusyItemId] = useState(null)
   const [confirmClear, setConfirmClear] = useState(false)
+  const [couponCodeInput, setCouponCodeInput] = useState('')
+  const [applyingCoupon, setApplyingCoupon] = useState(false)
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
+
+  const handleApplyCoupon = async (e) => {
+    e.preventDefault()
+    if (!couponCodeInput.trim()) return
+
+    setApplyingCoupon(true)
+    try {
+      const res = await couponService.validate(couponCodeInput.trim(), subtotal)
+      if (res.valid) {
+        setAppliedCoupon(res)
+        toast.success(`Coupon ${res.code} applied! You saved ${formatCurrency(res.discountAmount)}.`)
+        setCouponCodeInput('')
+      } else {
+        toast.error(res.message || 'Invalid coupon code.')
+      }
+    } catch (err) {
+      toast.error(err.message || 'Failed to apply coupon.')
+    } finally {
+      setApplyingCoupon(false)
+    }
+  }
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null)
+    toast.info('Coupon removed.')
+  }
+
+  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0
+  const finalCartTotal = Math.max(0, Number(subtotal) - Number(discountAmount))
 
   const handleQuantityChange = async (item, quantity) => {
     setBusyItemId(item.id)
@@ -152,10 +185,56 @@ export default function Cart() {
         <aside className="cart-summary">
           <h2 className="cart-summary-title">Order summary</h2>
 
+          <div className="coupon-box">
+            <span className="coupon-label">Promotions & Coupons</span>
+            {appliedCoupon ? (
+              <div className="coupon-applied-tag">
+                <div className="coupon-applied-info">
+                  <span className="coupon-code-badge">✓ {appliedCoupon.code}</span>
+                  <span>Saved {formatCurrency(appliedCoupon.discountAmount)}</span>
+                </div>
+                <button
+                  type="button"
+                  className="coupon-remove-btn"
+                  onClick={handleRemoveCoupon}
+                  title="Remove coupon"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleApplyCoupon} className="coupon-form">
+                <input
+                  type="text"
+                  className="form-control coupon-input"
+                  placeholder="Enter coupon code"
+                  value={couponCodeInput}
+                  onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
+                  disabled={applyingCoupon}
+                />
+                <button
+                  type="submit"
+                  className="btn btn-outline btn-sm"
+                  disabled={applyingCoupon || !couponCodeInput.trim()}
+                >
+                  {applyingCoupon ? 'Applying…' : 'Apply'}
+                </button>
+              </form>
+            )}
+          </div>
+
           <div className="cart-summary-row">
             <span>Subtotal</span>
             <span>{formatCurrency(subtotal)}</span>
           </div>
+
+          {appliedCoupon && (
+            <div className="cart-summary-row text-success">
+              <span>Coupon Discount ({appliedCoupon.code})</span>
+              <span>-{formatCurrency(appliedCoupon.discountAmount)}</span>
+            </div>
+          )}
+
           <div className="cart-summary-row">
             <span>Delivery</span>
             <span className="text-success">Free</span>
@@ -163,13 +242,13 @@ export default function Cart() {
 
           <div className="cart-summary-row is-total">
             <span>Total</span>
-            <span>{formatCurrency(total)}</span>
+            <span>{formatCurrency(finalCartTotal)}</span>
           </div>
 
           <button
             type="button"
             className="btn btn-primary btn-block btn-lg mt-4"
-            onClick={() => navigate('/checkout')}
+            onClick={() => navigate('/checkout', { state: { couponCode: appliedCoupon?.code } })}
             disabled={!checkoutAllowed}
           >
             Proceed to checkout

@@ -180,14 +180,27 @@ export default function ProductDetail() {
           <p className="detail-price">{formatCurrency(product.price)}</p>
 
           <div className="detail-stock">
-            {product.inStock ? (
+            {product.inStock && product.stock > 0 ? (
               product.stock <= 5 ? (
-                <span className="badge badge-warning">Only {product.stock} left in stock</span>
+                <div className="detail-stock-alert">
+                  <span className="stock-alert-icon">⚡</span>
+                  <div>
+                    <strong className="stock-alert-title">
+                      Only {product.stock} {product.stock === 1 ? 'item' : 'items'} left in stock!
+                    </strong>
+                    <p className="stock-alert-desc">Order soon — high demand on this item.</p>
+                  </div>
+                </div>
               ) : (
                 <span className="badge badge-success">In stock ({product.stock} available)</span>
               )
             ) : (
-              <span className="badge badge-danger">Out of stock</span>
+              <div className="detail-out-of-stock-alert">
+                <span className="badge badge-danger">Out of stock</span>
+                <p className="text-sm text-subtle mt-2">
+                  This item is currently unavailable. Check back soon for restocks.
+                </p>
+              </div>
             )}
           </div>
 
@@ -198,7 +211,7 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {product.inStock && (
+          {product.inStock && product.stock > 0 ? (
             <div className="detail-purchase">
               <div className="detail-qty">
                 <span className="form-label">Quantity</span>
@@ -229,6 +242,12 @@ export default function ProductDetail() {
                   Buy now
                 </button>
               </div>
+            </div>
+          ) : (
+            <div className="detail-purchase-disabled mt-4">
+              <button type="button" className="btn btn-outline btn-lg btn-block" disabled>
+                Currently Out of Stock
+              </button>
             </div>
           )}
 

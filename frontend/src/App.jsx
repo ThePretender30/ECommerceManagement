@@ -29,6 +29,7 @@ import AdminOrders from './pages/admin/AdminOrders'
 import AdminOrderDetail from './pages/admin/AdminOrderDetail'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminNotifications from './pages/admin/AdminNotifications'
+import AdminCoupons from './pages/admin/AdminCoupons'
 
 export default function App() {
   const location = useLocation()
@@ -68,6 +69,7 @@ export default function App() {
             <Route path="categories" element={<AdminCategories />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="orders/:id" element={<AdminOrderDetail />} />
+            <Route path="coupons" element={<AdminCoupons />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="notifications" element={<AdminNotifications />} />
           </Route>

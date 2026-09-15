@@ -156,6 +156,21 @@
   white-space: nowrap;
 }
 
+.order-row-reorder {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+  transition: all var(--transition-fast);
+}
+
+.order-row-reorder:hover:not(:disabled) {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
 .order-header {
   display: flex;
   align-items: flex-start;

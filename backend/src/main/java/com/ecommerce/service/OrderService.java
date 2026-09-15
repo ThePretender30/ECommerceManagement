@@ -40,6 +40,7 @@ public class OrderService {
     private final CartService cartService;
     private final AddressService addressService;
     private final ApplicationEventPublisher eventPublisher;
+    private final CouponService couponService;
 
     @Transactional
     public OrderResponse placeOrder(Long userId, PlaceOrderRequest request) {
@@ -120,7 +121,25 @@ public class OrderService {
             total = total.add(lineTotal);
         }
 
-        order.setTotalAmount(total);
+        BigDecimal subtotal = total;
+        BigDecimal discount = BigDecimal.ZERO;
+        String appliedCouponCode = null;
+
+        if (request.couponCode() != null && !request.couponCode().isBlank()) {
+            var validation = couponService.validateCoupon(request.couponCode(), subtotal);
+            if (!validation.valid()) {
+                throw new BadRequestException("Coupon error: " + validation.message());
+            }
+            discount = validation.discountAmount();
+            appliedCouponCode = validation.code();
+        }
+
+        BigDecimal finalTotal = subtotal.subtract(discount).max(BigDecimal.ZERO);
+
+        order.setSubtotalAmount(subtotal);
+        order.setDiscountAmount(discount);
+        order.setCouponCode(appliedCouponCode);
+        order.setTotalAmount(finalTotal);
 
         order.addStatusHistory(OrderStatusHistory.builder()
                 .status(OrderStatus.ORDER_PLACED)
@@ -131,8 +150,8 @@ public class OrderService {
 
         cart.getItems().clear();
 
-        log.info("Order {} placed by user {} for {} item(s), total {}",
-                saved.getOrderNumber(), userId, saved.getItems().size(), total);
+        log.info("Order {} placed by user {} for {} item(s), subtotal {}, discount {}, final total {}",
+                saved.getOrderNumber(), userId, saved.getItems().size(), subtotal, discount, finalTotal);
 
         publishStatusEvent(saved, null, OrderStatus.ORDER_PLACED);
 
