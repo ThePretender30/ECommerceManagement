@@ -1,35 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { StarRating } from './Common'
-import { useAuth, useCart, useToast } from '../hooks'
 import { formatCurrency, handleImageError, FALLBACK_IMAGE } from '../utils/format'
 import './ProductCard.css'
 
 export default function ProductCard({ product }) {
-  const { isAuthenticated } = useAuth()
-  const { addItem } = useCart()
-  const toast = useToast()
-  const navigate = useNavigate()
-
   const outOfStock = !product.inStock
   const lowStock = product.inStock && product.stock <= 5
-
-  const handleAddToCart = async (event) => {
-    event.preventDefault()
-    event.stopPropagation()
-
-    if (!isAuthenticated) {
-      toast.info('Please sign in to add items to your cart.')
-      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`)
-      return
-    }
-
-    try {
-      await addItem(product.id, 1)
-      toast.success(`${product.name} added to your cart.`)
-    } catch (error) {
-      toast.error(error.message)
-    }
-  }
 
   return (
     <article className="product-card">
@@ -66,15 +42,6 @@ export default function ProductCard({ product }) {
           </div>
         </div>
       </Link>
-
-      <button
-        type="button"
-        className="btn btn-primary btn-sm product-card-add"
-        onClick={handleAddToCart}
-        disabled={outOfStock}
-      >
-        {outOfStock ? 'Out of stock' : 'Add to cart'}
-      </button>
     </article>
   )
 }

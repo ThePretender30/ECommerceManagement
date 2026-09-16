@@ -112,7 +112,11 @@
 
 .product-card-footer {
   margin-top: auto;
-  padding-top: var(--space-3);
+  padding-top: var(--space-2);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
 }
 
 .product-card-price {
@@ -121,9 +125,12 @@
   color: var(--color-text);
 }
 
-.product-card-add {
-  margin: 0 var(--space-4) var(--space-4);
+.product-card-stock-warning {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-warning);
 }
+
 
 .product-grid {
   display: grid;
