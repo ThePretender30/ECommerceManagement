@@ -138,18 +138,6 @@ export default function Home() {
         link="/products?sort=rating"
       />
 
-      <section className="container">
-        <div className="promo-band">
-          <div>
-            <h2 className="promo-title">New here?</h2>
-            <p className="promo-text">
-              Create an account to save addresses, track orders and get WhatsApp delivery updates.
-            </p>
-          </div>
-          <Link to="/register" className="btn btn-primary btn-lg">Create an account</Link>
-        </div>
-      </section>
-
       <ProductRow
         title="Popular right now"
         subtitle="What other shoppers are reviewing most."
